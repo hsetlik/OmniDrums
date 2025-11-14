@@ -1,4 +1,4 @@
-#include "YourPluginName/Common.h"
+#include "OmniDrums/Common.h"
 
 static double sampleHz = 44100.0;
 

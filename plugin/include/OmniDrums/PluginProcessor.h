@@ -5,10 +5,10 @@
 
 namespace audio_plugin {
 
-class YourPluginNameAudioProcessor : public juce::AudioProcessor {
+class OmniDrumsAudioProcessor : public juce::AudioProcessor {
 public:
-  YourPluginNameAudioProcessor();
-  ~YourPluginNameAudioProcessor() override;
+  OmniDrumsAudioProcessor();
+  ~OmniDrumsAudioProcessor() override;
 
   void prepareToPlay(double sampleRate, int samplesPerBlock) override;
   void releaseResources() override;
@@ -35,7 +35,7 @@ public:
   apvts tree;
 
 private:
-  JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(YourPluginNameAudioProcessor)
+  JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(OmniDrumsAudioProcessor)
 };
 
 }  // namespace audio_plugin

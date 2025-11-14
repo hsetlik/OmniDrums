@@ -1,9 +1,9 @@
-#include "YourPluginName/PluginEditor.h"
-#include "YourPluginName/PluginProcessor.h"
+#include "OmniDrums/PluginEditor.h"
+#include "OmniDrums/PluginProcessor.h"
 
 namespace audio_plugin {
-YourPluginNameProcessorEditor::YourPluginNameProcessorEditor(
-    YourPluginNameAudioProcessor& p)
+OmniDrumsProcessorEditor::OmniDrumsProcessorEditor(
+    OmniDrumsAudioProcessor& p)
     : AudioProcessorEditor(&p), processorRef(p) {
   juce::ignoreUnused(processorRef);
   // Make sure that before the constructor has finished, you've set the
@@ -11,9 +11,9 @@ YourPluginNameProcessorEditor::YourPluginNameProcessorEditor(
   setSize(400, 300);
 }
 
-YourPluginNameProcessorEditor::~YourPluginNameProcessorEditor() {}
+OmniDrumsProcessorEditor::~OmniDrumsProcessorEditor() {}
 
-void YourPluginNameProcessorEditor::paint(juce::Graphics& g) {
+void OmniDrumsProcessorEditor::paint(juce::Graphics& g) {
   // (Our component is opaque, so we must completely fill the background with a
   // solid colour)
   g.fillAll(
@@ -24,7 +24,7 @@ void YourPluginNameProcessorEditor::paint(juce::Graphics& g) {
                    juce::Justification::centred, 1);
 }
 
-void YourPluginNameProcessorEditor::resized() {
+void OmniDrumsProcessorEditor::resized() {
   // This is generally where you'll want to lay out the positions of any
   // subcomponents in your editor..
 }

@@ -1,4 +1,4 @@
-#include "YourPluginName/Identifiers.h"
+#include "OmniDrums/Identifiers.h"
 
 apvts::ParameterLayout ID::getParameterLayout() {
   apvts::ParameterLayout layout;
