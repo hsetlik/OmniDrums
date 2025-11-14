@@ -14,6 +14,8 @@ set(ICON_FILES
 "${ICONS_DIR}/Ride_256.png"
 "${ICONS_DIR}/Snare_256.png"
 "${ICONS_DIR}/Tom_256.png"
+"${ICONS_DIR}/LibOpen_256.png"
+"${ICONS_DIR}/LibClosed_256.png"
 )
 
 juce_add_binary_data(

@@ -8,6 +8,7 @@ out/
 vs-build/
 compile_commands.json
 design/*.ai
+design/*.psd
 
 # Prerequisites
 *.d
