@@ -4,11 +4,32 @@ project(OmniDrums VERSION 0.1.0)
 # Adding a directory with the library/application name as a subfolder of the
 # include folder is a good practice. It helps avoid name clashes later on.
 set(INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include/OmniDrums")
-# Adds a plugin target (that's basically what the Projucer does).
 
+# add binary data for the icons
+set(ICONS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/icons")
+set(ICON_FILES
+"${ICONS_DIR}/ClosedHat_256.png"
+"${ICONS_DIR}/Kick_256.png"
+"${ICONS_DIR}/OpenHat_256.png"
+"${ICONS_DIR}/Ride_256.png"
+"${ICONS_DIR}/Snare_256.png"
+"${ICONS_DIR}/Tom_256.png"
+)
+
+juce_add_binary_data(
+  iconBinary
+  HEADER_NAME
+  "IconData.h"
+  NAMESPACE
+  "IconData"
+  SOURCES
+  "${ICON_FILES}")
+
+
+# Adds a plugin target (that's basically what the Projucer does).
 juce_add_plugin(${PROJECT_NAME}
     COMPANY_NAME Setlik # change this
-    IS_SYNTH FALSE # may change this
+    IS_SYNTH true # may change this
     NEEDS_MIDI_INPUT FALSE # may change this
     NEEDS_MIDI_OUTPUT FALSE # may change this
     PLUGIN_MANUFACTURER_CODE STLK # change this
@@ -39,11 +60,11 @@ target_include_directories(${PROJECT_NAME}
 
 
 # Links to all necessary dependencies. The present ones are recommended by JUCE.
-# If you use one of the additional modules, like the DSP module, you need to specify it here.
 target_link_libraries(${PROJECT_NAME}
     PRIVATE
         juce::juce_audio_utils
     PUBLIC
+        iconBinary
         juce::juce_recommended_config_flags
         juce::juce_recommended_lto_flags
         juce::juce_recommended_warning_flags
