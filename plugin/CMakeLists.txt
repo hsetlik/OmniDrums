@@ -66,10 +66,6 @@ juce_add_binary_data(
   "${FONT_FILES}"
 )
 
-
-
-
-
 # Adds a plugin target (that's basically what the Projucer does).
 juce_add_plugin(${PROJECT_NAME}
     COMPANY_NAME Setlik # change this
@@ -93,6 +89,8 @@ target_sources(${PROJECT_NAME}
         ${INCLUDE_DIR}/Identifiers.h
         ${INCLUDE_DIR}/Common.h
         ${INCLUDE_DIR}/PluginEditor.h
+				source/Images.cpp
+				${INCLUDE_DIR}/GUI/Shared/Images.h
         ${INCLUDE_DIR}/PluginProcessor.h
 )
 
