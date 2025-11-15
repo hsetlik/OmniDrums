@@ -18,6 +18,7 @@ set(ICON_FILES
 "${ICONS_DIR}/LibClosed_256.png"
 )
 
+
 juce_add_binary_data(
   iconBinary
   HEADER_NAME
@@ -26,6 +27,47 @@ juce_add_binary_data(
   "IconData"
   SOURCES
   "${ICON_FILES}")
+
+
+# binary data for other png assets
+set(ASSETS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/assets")
+set(ASSET_FILES
+"${ASSETS_DIR}/GradBar_6x1800.png"
+"${ASSETS_DIR}/KnobBkgnd_35x35.png"
+"${ASSETS_DIR}/KnobTop_24x24.png"
+)
+
+juce_add_binary_data(
+  assetBinary
+  HEADER_NAME
+  "AssetData.h"
+  NAMESPACE
+  "AssetData"
+  SOURCES
+  "${ASSET_FILES}"
+)
+
+
+# binary data for font files
+set(FONTS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/fonts")
+set(FONT_FILES
+"${FONTS_DIR}/KenyanCoffeeBoldItalic.otf"
+"${FONTS_DIR}/KenyanCoffeeRegular.otf"
+"${FONTS_DIR}/RobotoLightItalic.ttf"
+)
+
+juce_add_binary_data(
+  fontBinary
+  HEADER_NAME
+  "FontData.h"
+  NAMESPACE
+  "FontData"
+  SOURCES
+  "${FONT_FILES}"
+)
+
+
+
 
 
 # Adds a plugin target (that's basically what the Projucer does).
@@ -67,6 +109,8 @@ target_link_libraries(${PROJECT_NAME}
         juce::juce_audio_utils
     PUBLIC
         iconBinary
+        assetBinary
+        fontBinary
         juce::juce_recommended_config_flags
         juce::juce_recommended_lto_flags
         juce::juce_recommended_warning_flags
