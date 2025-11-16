@@ -94,6 +94,10 @@ target_sources(${PROJECT_NAME}
 				source/Fonts.cpp
 				${INCLUDE_DIR}/GUI/Shared/Fonts.h
 				${INCLUDE_DIR}/GUI/Shared/Color.h
+				source/OmniLookAndFeel.cpp
+				${INCLUDE_DIR}/GUI/Shared/OmniLookAndFeel.h
+				source/OmniState.cpp
+				${INCLUDE_DIR}/OmniState.h
         ${INCLUDE_DIR}/PluginProcessor.h
 )
 
