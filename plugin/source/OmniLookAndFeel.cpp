@@ -2,6 +2,7 @@
 #include "OmniDrums/GUI/Shared/Color.h"
 #include "OmniDrums/GUI/Shared/Images.h"
 constexpr float ThumbAspectRatio = 1.0f / 3.0f;
+constexpr float KnobTopAspectRatio = 24.0f / 35.0f;
 //===================================================
 using schemeID = juce::LookAndFeel_V4::ColourScheme::UIColour;
 
@@ -161,4 +162,42 @@ void OmniLookAndFeel::drawLinearThumb(juce::Graphics& g,
                                       bool isActive) {
   auto img = Assets::getImage(isActive ? Assets::ThumbOn : Assets::ThumbOff);
   g.drawImage(img, bounds);
+}
+
+void OmniLookAndFeel::drawRotarySlider(juce::Graphics& g,
+                                       int x,
+                                       int y,
+                                       int width,
+                                       int height,
+                                       float sliderPosProportional,
+                                       float rotaryStartAngle,
+                                       float rotaryEndAngle,
+                                       juce::Slider& slider) {
+  juce::ignoreUnused(slider);
+  if (width != height) {
+    if (width < height)
+      height = width;
+    else
+      width = height;
+  }
+  irect_t iBounds(x, y, width, height);
+  auto bounds = iBounds.toFloat().reduced(10.0f);
+  // 1. draw the background image
+  auto bkgndImg = Assets::getImage(Assets::KnobBkgnd);
+  g.drawImage(bkgndImg, bounds);
+  // 2. find the bounds for the knob top
+  const float inset =
+      ((float)width - ((float)width * KnobTopAspectRatio)) / 2.0f;
+  auto topBounds = bounds.reduced(inset);
+  // angle and draw the knob top
+  const float scale = topBounds.getWidth() / 24.0f;
+  auto endAngle =
+      flerp(rotaryStartAngle, rotaryEndAngle, sliderPosProportional);
+  auto transform =
+      juce::AffineTransform::rotation(endAngle, bounds.getCentreX(),
+                                      bounds.getCentreY())
+          .followedBy(juce::AffineTransform::scale(
+              scale, scale, bounds.getCentreX(), bounds.getCentreY()));
+  auto topImg = Assets::getImage(Assets::KnobTop);
+  g.drawImageTransformed(topImg, transform);
 }
