@@ -4,7 +4,7 @@
 using schemeID = juce::LookAndFeel_V4::ColourScheme::UIColour;
 
 static ColorScheme getColorScheme() {
-  ColorScheme scheme;
+  ColorScheme scheme = juce::LookAndFeel_V4::getDarkColourScheme();
   scheme.setUIColour(schemeID::windowBackground, UIColor::bkgndGray);
   scheme.setUIColour(schemeID::widgetBackground, UIColor::bkgndGray);
   scheme.setUIColour(schemeID::menuBackground, UIColor::bkgndGray);
@@ -20,3 +20,22 @@ static ColorScheme getColorScheme() {
 //------------------------------------------------------
 
 OmniLookAndFeel::OmniLookAndFeel() : juce::LookAndFeel_V4(getColorScheme()) {}
+
+// Sliders-----------------------------------------------
+
+int OmniLookAndFeel::getSliderThumbRadius(juce::Slider& slider) {
+  return std::min(12, slider.isHorizontal()
+                          ? (int)((float)slider.getHeight() * 0.5f)
+                          : (int)((float)slider.getWidth() * 0.5f));
+}
+
+// void OmniLookAndFeel::drawLinearSlider(juce::Graphics& g,
+//                                        int x,
+//                                        int y,
+//                                        int width,
+//                                        int height,
+//                                        float sliderPos,
+//                                        float minSliderPos,
+//                                        float maxSliderPos,
+//                                        juce::Slider::SliderStyle style,
+//                                        juce::Slider& slider) {}

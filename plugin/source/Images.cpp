@@ -11,6 +11,10 @@ juce::Image getImage(const AssetE& id) {
       AssetData::KnobBkgnd_35x35_png, AssetData::KnobBkgnd_35x35_pngSize);
   static juce::Image iKnobTop = juce::ImageFileFormat::loadFrom(
       AssetData::KnobTop_24x24_png, AssetData::KnobTop_24x24_pngSize);
+  static juce::Image iVertThumbOff = juce::ImageFileFormat::loadFrom(
+      AssetData::VertThumbOff_28x42_png, AssetData::VertThumbOff_28x42_pngSize);
+  static juce::Image iVertThumbOn = juce::ImageFileFormat::loadFrom(
+      AssetData::VertThumbOn_28x42_png, AssetData::VertThumbOn_28x42_pngSize);
   switch (id) {
     case GradBar:
       return iGradBar;
@@ -20,6 +24,12 @@ juce::Image getImage(const AssetE& id) {
       break;
     case KnobTop:
       return iKnobTop;
+      break;
+    case ThumbOff:
+      return iVertThumbOff;
+      break;
+    case ThumbOn:
+      return iVertThumbOn;
       break;
     default:
       jassert(false);
@@ -47,6 +57,7 @@ juce::Image getImage(const IconE& id) {
       IconData::LibOpen_256_png, IconData::LibOpen_256_pngSize);
   static juce::Image iLibClosed = juce::ImageFileFormat::loadFrom(
       IconData::LibClosed_256_png, IconData::LibClosed_256_pngSize);
+
   switch (id) {
     case Kick:
       return iKick;

@@ -35,6 +35,8 @@ set(ASSET_FILES
 "${ASSETS_DIR}/GradBar_6x1800.png"
 "${ASSETS_DIR}/KnobBkgnd_35x35.png"
 "${ASSETS_DIR}/KnobTop_24x24.png"
+"${ASSETS_DIR}/VertThumbOff_28x42.png"
+"${ASSETS_DIR}/VertThumbOn_28x42.png"
 )
 
 juce_add_binary_data(
