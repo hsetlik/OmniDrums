@@ -93,6 +93,7 @@ target_sources(${PROJECT_NAME}
 				${INCLUDE_DIR}/GUI/Shared/Images.h
 				source/Fonts.cpp
 				${INCLUDE_DIR}/GUI/Shared/Fonts.h
+				${INCLUDE_DIR}/GUI/Shared/Color.h
         ${INCLUDE_DIR}/PluginProcessor.h
 )
 
