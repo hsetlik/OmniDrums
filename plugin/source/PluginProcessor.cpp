@@ -12,8 +12,7 @@ OmniDrumsAudioProcessor::OmniDrumsAudioProcessor()
 #endif
               .withOutput("Output", juce::AudioChannelSet::stereo(), true)
 #endif
-              ),
-      tree(*this, nullptr, ID::OmniDrums_state, ID::getParameterLayout()) {
+      ) {
 }
 
 OmniDrumsAudioProcessor::~OmniDrumsAudioProcessor() {}
@@ -71,14 +70,13 @@ const juce::String OmniDrumsAudioProcessor::getProgramName(int index) {
   return {};
 }
 
-void OmniDrumsAudioProcessor::changeProgramName(
-    int index,
-    const juce::String& newName) {
+void OmniDrumsAudioProcessor::changeProgramName(int index,
+                                                const juce::String& newName) {
   juce::ignoreUnused(index, newName);
 }
 
 void OmniDrumsAudioProcessor::prepareToPlay(double sampleRate,
-                                                 int samplesPerBlock) {
+                                            int samplesPerBlock) {
   // Use this method as the place to do any pre-playback
   // initialisation that you need..
   juce::ignoreUnused(sampleRate, samplesPerBlock);
@@ -111,9 +109,8 @@ bool OmniDrumsAudioProcessor::isBusesLayoutSupported(
 #endif
 }
 
-void OmniDrumsAudioProcessor::processBlock(
-    juce::AudioBuffer<float>& buffer,
-    juce::MidiBuffer& midiMessages) {
+void OmniDrumsAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer,
+                                           juce::MidiBuffer& midiMessages) {
   juce::ignoreUnused(midiMessages);
   juce::ScopedNoDenormals noDenormals;
   auto totalNumInputChannels = getTotalNumInputChannels();
@@ -159,7 +156,7 @@ void OmniDrumsAudioProcessor::getStateInformation(
 }
 
 void OmniDrumsAudioProcessor::setStateInformation(const void* data,
-                                                       int sizeInBytes) {
+                                                  int sizeInBytes) {
   // You should use this method to restore your parameters from this memory
   // block, whose contents will have been created by the getStateInformation()
   // call.

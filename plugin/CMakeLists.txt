@@ -49,6 +49,29 @@ juce_add_binary_data(
   "${ASSET_FILES}"
 )
 
+# binary data for defaut samples
+
+set(FACTORY_SAMPLES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/factory_samples")
+set(FACTORY_SAMPLE_FILES
+"${FACTORY_SAMPLES_DIR}/defaultClosedHat.wav"
+"${FACTORY_SAMPLES_DIR}/defaultHiTom.wav"
+"${FACTORY_SAMPLES_DIR}/defaultKick.wav"
+"${FACTORY_SAMPLES_DIR}/defaultLowTom.wav"
+"${FACTORY_SAMPLES_DIR}/defaultMidTom.wav"
+"${FACTORY_SAMPLES_DIR}/defaultOpenHat.wav"
+"${FACTORY_SAMPLES_DIR}/defaultRide.wav"
+"${FACTORY_SAMPLES_DIR}/defaultSnare.wav"
+)
+
+juce_add_binary_data(
+  factorySamplesBinary
+  HEADER_NAME
+  "DefautSampleData.h"
+  NAMESPACE
+  "DefaultSampleData"
+  SOURCES
+  "${FACTORY_SAMPLE_FILES}"
+)
 
 # binary data for font files
 set(FONTS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/fonts")
@@ -120,6 +143,7 @@ target_link_libraries(${PROJECT_NAME}
         iconBinary
         assetBinary
         fontBinary
+        factorySamplesBinary
         juce::juce_recommended_config_flags
         juce::juce_recommended_lto_flags
         juce::juce_recommended_warning_flags
