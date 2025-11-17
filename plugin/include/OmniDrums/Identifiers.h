@@ -54,6 +54,8 @@ DECLARE_ID(channelActive)
 DECLARE_ID(channelPan)
 DECLARE_ID(channelGain)
 
+// patch library stuff-------------------------
+
 }  // namespace ID
 
 #undef DECLARE_ID

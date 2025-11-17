@@ -125,6 +125,8 @@ target_sources(${PROJECT_NAME}
 				${INCLUDE_DIR}/OmniState.h
 				source/OmniEditor.cpp
 				${INCLUDE_DIR}/GUI/OmniEditor.h
+				source/OmniSampleLibrary.cpp
+				${INCLUDE_DIR}/OmniSampleLibrary.h
         ${INCLUDE_DIR}/PluginProcessor.h
 )
 
