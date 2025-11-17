@@ -5,7 +5,16 @@
 
 namespace Assets {
 
-enum AssetE { GradBar, KnobBkgnd, KnobTop, ThumbOn, ThumbOff };
+enum AssetE {
+  GradBar,
+  KnobBkgnd,
+  KnobTop,
+  ThumbOn,
+  ThumbOff,
+  DrumBkgnd,
+  UpperBarBkgnd,
+  VuMeter
+};
 juce::Image getImage(const AssetE& id);
 }  // namespace Assets
 

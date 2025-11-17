@@ -22,8 +22,7 @@ void OmniEditor::paint(juce::Graphics& g) {
   g.fillRect(upperBounds);
   // draw the strings
   AttString nameStr("OmniDrums");
-  nameStr.setFont(
-      Fonts::getFont(Fonts::KenyanBoldItalic).withPointHeight(60.0f));
+  nameStr.setFont(Fonts::getFont(Fonts::KenyanBoldItalic).withHeight(60.0f));
   nameStr.setJustification(juce::Justification::centredLeft);
   nameStr.setColour(UIColor::orangeLight);
   frect_t nameBounds = {11.0f, 11.0f, 231.0f, 66.0f};

@@ -15,6 +15,14 @@ juce::Image getImage(const AssetE& id) {
       AssetData::VertThumbOff_28x42_png, AssetData::VertThumbOff_28x42_pngSize);
   static juce::Image iVertThumbOn = juce::ImageFileFormat::loadFrom(
       AssetData::VertThumbOn_28x42_png, AssetData::VertThumbOn_28x42_pngSize);
+  static juce::Image iDrumBkgnd =
+      juce::ImageFileFormat::loadFrom(AssetData::DrumIconBkgnd_50x52_png,
+                                      AssetData::DrumIconBkgnd_50x52_pngSize);
+  static juce::Image iUpperBarBkgnd =
+      juce::ImageFileFormat::loadFrom(AssetData::UpperBarBkgnd_296x70_png,
+                                      AssetData::UpperBarBkgnd_296x70_pngSize);
+  static juce::Image iVuMeter = juce::ImageFileFormat::loadFrom(
+      AssetData::VuMeter_28x240_png, AssetData::VuMeter_28x240_pngSize);
   switch (id) {
     case GradBar:
       return iGradBar;
@@ -30,6 +38,15 @@ juce::Image getImage(const AssetE& id) {
       break;
     case ThumbOn:
       return iVertThumbOn;
+      break;
+    case DrumBkgnd:
+      return iDrumBkgnd;
+      break;
+    case UpperBarBkgnd:
+      return iUpperBarBkgnd;
+      break;
+    case VuMeter:
+      return iVuMeter;
       break;
     default:
       jassert(false);

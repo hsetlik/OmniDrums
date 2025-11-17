@@ -37,6 +37,10 @@ set(ASSET_FILES
 "${ASSETS_DIR}/KnobTop_24x24.png"
 "${ASSETS_DIR}/VertThumbOff_28x42.png"
 "${ASSETS_DIR}/VertThumbOn_28x42.png"
+"${ASSETS_DIR}/DrumIconBkgnd_50x52.png"
+"${ASSETS_DIR}/UpperBarBkgnd_296x70.png"
+"${ASSETS_DIR}/VuMeter_28x240.png"
+
 )
 
 juce_add_binary_data(
