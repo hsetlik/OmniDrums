@@ -1,6 +1,7 @@
 #pragma once
 
 #include "PluginProcessor.h"
+#include "GUI/OmniEditor.h"
 
 namespace audio_plugin {
 
@@ -12,6 +13,7 @@ public:
   void resized() override;
 
 private:
+  OmniEditor editor;
   // This reference is provided as a quick way for your editor to
   // access the processor object that created it.
   OmniDrumsAudioProcessor& processorRef;

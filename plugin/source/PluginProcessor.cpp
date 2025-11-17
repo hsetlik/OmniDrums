@@ -12,7 +12,8 @@ OmniDrumsAudioProcessor::OmniDrumsAudioProcessor()
 #endif
               .withOutput("Output", juce::AudioChannelSet::stereo(), true)
 #endif
-      ) {
+              ),
+      state(*this) {
 }
 
 OmniDrumsAudioProcessor::~OmniDrumsAudioProcessor() {}

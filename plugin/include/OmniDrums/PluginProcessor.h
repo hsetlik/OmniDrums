@@ -2,6 +2,7 @@
 
 #include <juce_audio_processors/juce_audio_processors.h>
 #include "Common.h"
+#include "OmniDrums/OmniState.h"
 
 namespace audio_plugin {
 
@@ -30,6 +31,8 @@ public:
   void changeProgramName(int index, const juce::String& newName) override;
   void getStateInformation(juce::MemoryBlock& destData) override;
   void setStateInformation(const void* data, int sizeInBytes) override;
+
+  OmniState state;
 
 private:
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(OmniDrumsAudioProcessor)
