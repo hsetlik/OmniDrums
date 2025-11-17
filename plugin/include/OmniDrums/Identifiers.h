@@ -18,14 +18,25 @@ typedef std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>
 typedef std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment>
     combo_attach_ptr;
 typedef juce::NormalisableRange<float> frange_t;
+using ValueTree = juce::ValueTree;
+
+// some defines for things like allowed MIDI notes
+#define MIN_MIDI_NUM 35
+#define MAX_MIDI_NUM 100
+#define NUM_DRUM_CHANNELS 65
+
+// convert between MIDI note and channel num
+int channelNumForNote(int midiNote);
+int noteForChannelNum(int channelNum);
 
 #define DECLARE_ID(name) const juce::Identifier name(#name);
 
 namespace ID {
 // top level ID for the apvts
-DECLARE_ID(OmniDrums_state)
+DECLARE_ID(OmniDrums_audioState)
+DECLARE_ID(OmniDrums_sampleState)
 
-apvts::ParameterLayout getParameterLayout();
+// apvts::ParameterLayout getParameterLayout();
 }  // namespace ID
 
 #undef DECLARE_ID
