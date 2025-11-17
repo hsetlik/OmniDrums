@@ -26,12 +26,12 @@ frange_t rangeWithCenter(float min, float max, float center);
 // some defines for things like allowed MIDI notes
 #define MIN_MIDI_NUM 35
 #define MAX_MIDI_NUM 100
-#define NUM_DRUM_CHANNELS 65
+#define NUM_DRUM_CHANNELS 64
 
 // defines for various ranges and defaults
 #define CHAN_GAIN_MIN -100.0f
-#define CHAN_GAIN_MAX 24.0f
-#define CHAN_GAIN_CENTER -6.0f
+#define CHAN_GAIN_MAX 12.0f
+#define CHAN_GAIN_CENTER -12.0f
 #define CHAN_GAIN_DEFAULT 0.0f
 
 #define PAN_MIN -100.0f
@@ -39,8 +39,8 @@ frange_t rangeWithCenter(float min, float max, float center);
 #define PAN_DEFAULT 0.0f
 
 // convert between MIDI note and channel num
-int channelNumForNote(int midiNote);
-int noteForChannelNum(int channelNum);
+// int channelNumForNote(int midiNote);
+// int noteForChannelNum(int channelNum);
 
 #define DECLARE_ID(name) const juce::Identifier name(#name);
 
@@ -53,6 +53,7 @@ DECLARE_ID(OmniDrums_sampleState)
 DECLARE_ID(channelActive)
 DECLARE_ID(channelPan)
 DECLARE_ID(channelGain)
+DECLARE_ID(channelMidiNum)
 
 // patch library stuff-------------------------
 

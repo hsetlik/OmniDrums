@@ -19,6 +19,17 @@ buildBoolParam(const String& id, const String& name, bool defaultVal) {
   return std::make_unique<juce::AudioParameterBool>(paramID, name, defaultVal);
 }
 
+static std::unique_ptr<juce::AudioParameterInt> buildIntParam(
+    const String& id,
+    const String& name,
+    int min,
+    int max,
+    int defaultVal) {
+  juce::ParameterID paramID{id, 1};
+  return std::make_unique<juce::AudioParameterInt>(paramID, name, min, max,
+                                                   defaultVal);
+}
+
 static apvts::ParameterLayout getParamLayout() {
   apvts::ParameterLayout layout;
   // all the parameters for per-channel gain, pan, pitch shift, etc. go here
@@ -39,6 +50,12 @@ static apvts::ParameterLayout getParamLayout() {
     auto panName = "Channel " + String(i + 1) + " pan";
     auto panRange = rangeWithCenter(PAN_MIN, PAN_MAX, PAN_DEFAULT);
     layout.add(buildFloatParam(panID, panName, panRange, PAN_DEFAULT));
+    // midi note
+    auto noteID = ID::channelMidiNum.toString() + iStr;
+    auto noteName = "Channel " + String(i + 1) + " MIDI note";
+    const int defaultNote = MIN_MIDI_NUM + i;
+    layout.add(buildIntParam(noteID, noteName, MIN_MIDI_NUM, MAX_MIDI_NUM,
+                             defaultNote));
   }
 
   return layout;
