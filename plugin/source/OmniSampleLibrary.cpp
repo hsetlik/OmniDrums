@@ -1,5 +1,6 @@
 #include "OmniDrums/OmniSampleLibrary.h"
 #include "DefautSampleData.h"
+#include "juce_audio_formats/juce_audio_formats.h"
 namespace FactorySamples {
 static void writeBinaryToFile(const SampleE& id, juce::File& dest) {
   switch (id) {
@@ -89,6 +90,50 @@ static void initFactorySamples(juce::File libFolder) {
   for (size_t i = 0; i < sampleFiles.size(); ++i) {
     writeBinaryToFile((SampleE)i, sampleFiles[i]);
   }
+}
+
+static juce::File getSampleFile(const SampleE& id) {
+  auto libFolder = OmniSampleLibrary::getSampleLibFolder();
+  juce::File file;
+  switch (id) {
+    case closedHat:
+      return libFolder.getChildFile("HiHats/defaultClosedHat.wav");
+      break;
+    case openHat:
+      return libFolder.getChildFile("HiHats/defaultOpenHat.wav");
+      break;
+    case hiTom:
+      return libFolder.getChildFile("Toms/defaultHiTom.wav");
+      break;
+    case midTom:
+      return libFolder.getChildFile("Toms/defaultMidTom.wav");
+      break;
+    case lowTom:
+      return libFolder.getChildFile("Toms/defaultLowTom.wav");
+      break;
+    case ride:
+      return libFolder.getChildFile("Cymbals/defaultRide.wav");
+      break;
+    case snare:
+      return libFolder.getChildFile("Snares/defaultSnare.wav");
+      break;
+    case kick:
+      return libFolder.getChildFile("Kicks/defaultKick.wav");
+      break;
+  }
+  jassert(false);
+  return juce::File();
+}
+
+juce::AudioFormatReader* getReader(const SampleE& id) {
+  static juce::AudioFormatManager manager;
+  static bool managerPrepared = false;
+  if (!managerPrepared) {
+    manager.registerBasicFormats();
+    managerPrepared = true;
+  }
+  auto file = getSampleFile(id);
+  return manager.createReaderFor(file);
 }
 }  // namespace FactorySamples
 
