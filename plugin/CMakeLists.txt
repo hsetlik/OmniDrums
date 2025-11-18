@@ -131,6 +131,8 @@ target_sources(${PROJECT_NAME}
 				${INCLUDE_DIR}/GUI/OmniEditor.h
 				source/OmniSampleLibrary.cpp
 				${INCLUDE_DIR}/OmniSampleLibrary.h
+				source/SamplePlayer.cpp
+				${INCLUDE_DIR}/Audio/SamplePlayer.h
         ${INCLUDE_DIR}/PluginProcessor.h
 )
 
