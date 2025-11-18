@@ -92,7 +92,7 @@ static void initFactorySamples(juce::File libFolder) {
   }
 }
 
-static juce::File getSampleFile(const SampleE& id) {
+juce::File getSampleFile(const SampleE& id) {
   auto libFolder = OmniSampleLibrary::getSampleLibFolder();
   juce::File file;
   switch (id) {

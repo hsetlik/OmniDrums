@@ -6,6 +6,8 @@
 namespace FactorySamples {
 enum SampleE { closedHat, openHat, hiTom, midTom, lowTom, ride, snare, kick };
 juce::AudioFormatReader* getReader(const SampleE& id);
+
+juce::File getSampleFile(const SampleE& id);
 }  // namespace FactorySamples
 
 class OmniSampleLibrary {

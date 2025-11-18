@@ -1,6 +1,7 @@
 #include "OmniDrums/Audio/SamplePlayer.h"
 #include <cmath>
 #include "juce_audio_formats/juce_audio_formats.h"
+#include "juce_core/juce_core.h"
 
 namespace AudioFile {
 // our state variables
@@ -28,6 +29,10 @@ juce::AudioFormatReader* getReaderFor(const juce::File& sample) {
     managerPrepared = true;
   }
   return manager.createReaderFor(sample);
+}
+
+double getCurrentSampleRate() {
+  return currentSampleRate;
 }
 
 // call this from PluginProcessor.cpp any time the host sets the sample rate
@@ -100,4 +105,37 @@ SamplePlaybackBuffer::SamplePlaybackBuffer(const juce::File& sample,
     const float pos = (float)s / (float)lengthInSamples;
     buffer[s] = monoAtRelativePos(fileBuf, pos);
   }
+}
+
+//===================================================
+
+SamplePlayer::SamplePlayer(const juce::File& sample)
+    : sampleFile(sample),
+      buf(std::make_unique<SamplePlaybackBuffer>(
+          sampleFile,
+          AudioFile::getCurrentSampleRate())) {
+  bufferPrepared = true;
+}
+
+void SamplePlayer::sampleRateSet(double newRate) {
+  juce::ignoreUnused(newRate);
+  bufferPrepared = false;
+  isPlaying = false;
+  triggerAsyncUpdate();
+}
+
+void SamplePlayer::handleAsyncUpdate() {
+  buf.reset(
+      new SamplePlaybackBuffer(sampleFile, AudioFile::getCurrentSampleRate()));
+  bufferPrepared = true;
+}
+
+float SamplePlayer::tick() {
+  if (!bufferPrepared || !isPlaying) {
+    return 0.0f;
+  }
+  auto value = buf->getValue(currentIdx);
+  ++currentIdx;
+  isPlaying = currentIdx < buf->lengthInSamples;
+  return value;
 }
