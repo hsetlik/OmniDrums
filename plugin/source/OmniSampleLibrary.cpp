@@ -140,6 +140,56 @@ static void initFactorySamples(juce::File libFolder) {
   }
 }
 
+ValueTree getDefaultSampleState(const SampleE& id) {
+  ValueTree vt(ID::OmniPlayerSample);
+  switch (id) {
+    case closedHat:
+      vt.setProperty(ID::sampleDrumCategory, (int)DrumCategE::hiHat, nullptr);
+      vt.setProperty(ID::sampleFileName, "defaultClosedHat.wav", nullptr);
+      vt.setProperty(ID::sampleDrumChannel, 7, nullptr);
+      break;
+    case openHat:
+      vt.setProperty(ID::sampleDrumCategory, (int)DrumCategE::hiHat, nullptr);
+      vt.setProperty(ID::sampleFileName, "defaultOpenHat.wav", nullptr);
+      vt.setProperty(ID::sampleDrumChannel, 11, nullptr);
+      break;
+    case hiTom:
+      vt.setProperty(ID::sampleDrumCategory, (int)DrumCategE::tom, nullptr);
+      vt.setProperty(ID::sampleFileName, "defaultHiTom.wav", nullptr);
+      vt.setProperty(ID::sampleDrumChannel, 15, nullptr);
+      break;
+    case midTom:
+      vt.setProperty(ID::sampleDrumCategory, (int)DrumCategE::tom, nullptr);
+      vt.setProperty(ID::sampleFileName, "defaultMidTom.wav", nullptr);
+      vt.setProperty(ID::sampleDrumChannel, 12, nullptr);
+      break;
+    case lowTom:
+      vt.setProperty(ID::sampleDrumCategory, (int)DrumCategE::tom, nullptr);
+      vt.setProperty(ID::sampleFileName, "defaultLowTom.wav", nullptr);
+      vt.setProperty(ID::sampleDrumChannel, 10, nullptr);
+      break;
+    case ride:
+      vt.setProperty(ID::sampleDrumCategory, (int)DrumCategE::ride, nullptr);
+      vt.setProperty(ID::sampleFileName, "defaultRide.wav", nullptr);
+      vt.setProperty(ID::sampleDrumChannel, 16, nullptr);
+      break;
+    case snare:
+      vt.setProperty(ID::sampleDrumCategory, (int)DrumCategE::snare, nullptr);
+      vt.setProperty(ID::sampleFileName, "defaultSnare.wav", nullptr);
+      vt.setProperty(ID::sampleDrumChannel, 3, nullptr);
+      break;
+    case kick:
+      vt.setProperty(ID::sampleDrumCategory, (int)DrumCategE::kick, nullptr);
+      vt.setProperty(ID::sampleFileName, "defaultKick.wav", nullptr);
+      vt.setProperty(ID::sampleDrumChannel, 0, nullptr);
+      break;
+    default:
+      jassert(false);
+      break;
+  }
+  return vt;
+}
+
 }  // namespace FactorySamples
 
 //===================================================
@@ -155,4 +205,8 @@ juce::File OmniSampleLibrary::getSampleLibFolder() {
     FactorySamples::initFactorySamples(libFolder);
   }
   return libFolder;
+}
+
+OmniSampleLibrary::OmniSampleLibrary() : libFolder(getSampleLibFolder()) {
+  jassert(libFolder.exists() && libFolder.isDirectory());
 }

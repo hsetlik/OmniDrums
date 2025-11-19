@@ -1,6 +1,7 @@
 #include "OmniDrums/OmniState.h"
 #include "OmniDrums/Common.h"
 #include "OmniDrums/Identifiers.h"
+#include "OmniDrums/OmniSampleLibrary.h"
 
 // helpers for APVTS components
 static std::unique_ptr<juce::AudioParameterFloat> buildFloatParam(
@@ -66,7 +67,11 @@ static apvts::ParameterLayout getParamLayout() {
 static ValueTree defaultSampleState() {
   ValueTree vt(ID::OmniDrums_sampleState);
   // set up default samples
-
+  for (int i = 0; i < NUM_FACTORY_SAMPLES; ++i) {
+    auto sampleState =
+        FactorySamples::getDefaultSampleState((FactorySamples::SampleE)i);
+    vt.appendChild(sampleState, nullptr);
+  }
   return vt;
 }
 //===================================================

@@ -10,6 +10,7 @@
  * */
 #include <juce_core/juce_core.h>
 #include <juce_audio_processors/juce_audio_processors.h>
+#include <unordered_map>
 
 // typedefs bc some of these types are a mouthful
 typedef juce::AudioProcessorValueTreeState apvts;
@@ -20,6 +21,7 @@ typedef std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment>
 typedef juce::NormalisableRange<float> frange_t;
 using ValueTree = juce::ValueTree;
 using String = juce::String;
+using Component = juce::Component;
 
 // little range helper that should be built into JUCE tbh
 frange_t rangeWithCenter(float min, float max, float center);
@@ -56,9 +58,12 @@ const juce::StringArray drumCategoryNames = {"Kick", "Snare",      "Hi-hat",
 inline String stringFor(const DrumCategE& categ) {
   return drumCategoryNames[(int)categ];
 }
-// convert between MIDI note and channel num
-// int channelNumForNote(int midiNote);
-// int noteForChannelNum(int channelNum);
+
+// a hash table of general MIDI drum names.
+// keys are MIDI note #s and values are the names used in the MIDI
+// standard's drum map per this website:
+// https://qsrdrums.com/webhelp-responsive/References/r_general_midi_drum_kit.html
+const std::unordered_map<int, String>& generalMIDIDrumNames();
 
 #define DECLARE_ID(name) const juce::Identifier name(#name);
 
@@ -73,7 +78,14 @@ DECLARE_ID(channelPan)
 DECLARE_ID(channelGain)
 DECLARE_ID(channelMidiNum)
 
-// patch library stuff-------------------------
+// sample library stuff-------------------------
+DECLARE_ID(OmniPlayerSample)    // type for the child tree that represents a
+                                // sample as loaded into a drum channel
+DECLARE_ID(sampleDrumCategory)  // int representing the category folder we can
+                                // find this sample in
+DECLARE_ID(sampleFileName)      // string path relative to the category folder
+DECLARE_ID(
+    sampleDrumChannel)  // index of the drum channel this sample is loaded to
 
 }  // namespace ID
 

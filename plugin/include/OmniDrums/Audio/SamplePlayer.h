@@ -46,8 +46,9 @@ private:
   std::unique_ptr<SamplePlaybackBuffer> buf;
 
 public:
-  SamplePlayer(const juce::File& sample =
-                   FactorySamples::getSampleFile(FactorySamples::kick));
+  SamplePlayer(const juce::File& sample = FactorySamples::getSampleFile(
+                   FactorySamples::kick,
+                   OmniSampleLibrary::getSampleLibFolder()));
   void sampleRateSet(double sr) override;
   void handleAsyncUpdate() override;
   // get the next output value & update this player's internal state accordingly
