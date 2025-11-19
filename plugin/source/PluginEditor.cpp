@@ -9,6 +9,8 @@ OmniDrumsProcessorEditor::OmniDrumsProcessorEditor(OmniDrumsAudioProcessor& p)
   // Make sure that before the constructor has finished, you've set the
   // editor's size to whatever you need it to be.
   setSize(1800, 1080);
+  // setScaleFactor(1.2f);
+  //  setResizable(true, true);
   addAndMakeVisible(editor);
 }
 

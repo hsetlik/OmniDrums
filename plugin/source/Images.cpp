@@ -16,11 +16,11 @@ juce::Image getImage(const AssetE& id) {
   static juce::Image iVertThumbOn = juce::ImageFileFormat::loadFrom(
       AssetData::VertThumbOn_28x42_png, AssetData::VertThumbOn_28x42_pngSize);
   static juce::Image iDrumBkgnd =
-      juce::ImageFileFormat::loadFrom(AssetData::DrumIconBkgnd_50x52_png,
-                                      AssetData::DrumIconBkgnd_50x52_pngSize);
+      juce::ImageFileFormat::loadFrom(AssetData::DrumIconBkgnd_60x62_png,
+                                      AssetData::DrumIconBkgnd_60x62_pngSize);
   static juce::Image iUpperBarBkgnd =
-      juce::ImageFileFormat::loadFrom(AssetData::UpperBarBkgnd_296x70_png,
-                                      AssetData::UpperBarBkgnd_296x70_pngSize);
+      juce::ImageFileFormat::loadFrom(AssetData::UpperBarBkgnd_296x84_png,
+                                      AssetData::UpperBarBkgnd_296x84_pngSize);
   static juce::Image iVuMeter = juce::ImageFileFormat::loadFrom(
       AssetData::VuMeter_28x240_png, AssetData::VuMeter_28x240_pngSize);
   switch (id) {

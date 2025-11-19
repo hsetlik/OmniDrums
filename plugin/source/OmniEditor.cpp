@@ -15,25 +15,31 @@ OmniEditor::~OmniEditor() {
 void OmniEditor::paint(juce::Graphics& g) {
   // fill the background
   auto fBounds = getLocalBounds().toFloat();
+  const float yScale = fBounds.getHeight() / 1080.0f;
+  const float xScale = fBounds.getWidth() / 1800.0f;
   g.setColour(UIColor::shadowGray);
   g.fillRect(fBounds);
-  auto upperBounds = fBounds.removeFromTop(97.0f);
+  auto upperBounds = fBounds.removeFromTop(97.0f * yScale);
   g.setColour(UIColor::bkgndGray);
   g.fillRect(upperBounds);
   // draw the strings
   AttString nameStr("OmniDrums");
-  nameStr.setFont(Fonts::getFont(Fonts::KenyanBoldItalic).withHeight(60.0f));
+  nameStr.setFont(
+      Fonts::getFont(Fonts::KenyanBoldItalic).withHeight(60.0f * yScale));
   nameStr.setJustification(juce::Justification::centredLeft);
   nameStr.setColour(UIColor::orangeLight);
-  frect_t nameBounds = {11.0f, 11.0f, 231.0f, 66.0f};
+  frect_t nameBounds = {11.0f * xScale, 11.0f * yScale, 231.0f * xScale,
+                        66.0f * yScale};
+
   nameStr.draw(g, nameBounds);
 
   AttString versionStr("Version string goes here");
   versionStr.setFont(
-      Fonts::getFont(Fonts::RobotoLightItalic).withHeight(14.0f));
+      Fonts::getFont(Fonts::RobotoLightItalic).withHeight(14.0f * yScale));
   versionStr.setJustification(juce::Justification::centredLeft);
   versionStr.setColour(UIColor::borderGray);
-  frect_t versionBounds = {15.0f, 72.0f, 148.0f, 16.0f};
+  frect_t versionBounds = {15.0f * xScale, 72.0f * yScale, 148.0f * xScale,
+                           16.0f * yScale};
   versionStr.draw(g, versionBounds);
 
   // draw the gradient border thing

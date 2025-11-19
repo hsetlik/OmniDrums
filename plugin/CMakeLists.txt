@@ -37,8 +37,8 @@ set(ASSET_FILES
 "${ASSETS_DIR}/KnobTop_24x24.png"
 "${ASSETS_DIR}/VertThumbOff_28x42.png"
 "${ASSETS_DIR}/VertThumbOn_28x42.png"
-"${ASSETS_DIR}/DrumIconBkgnd_50x52.png"
-"${ASSETS_DIR}/UpperBarBkgnd_296x70.png"
+"${ASSETS_DIR}/DrumIconBkgnd_60x62.png"
+"${ASSETS_DIR}/UpperBarBkgnd_296x84.png"
 "${ASSETS_DIR}/VuMeter_28x240.png"
 
 )
@@ -83,6 +83,7 @@ set(FONT_FILES
 "${FONTS_DIR}/KenyanCoffeeBoldItalic.otf"
 "${FONTS_DIR}/KenyanCoffeeRegular.otf"
 "${FONTS_DIR}/RobotoLightItalic.ttf"
+"${FONTS_DIR}/RobotoLight.ttf"
 )
 
 juce_add_binary_data(
@@ -133,6 +134,8 @@ target_sources(${PROJECT_NAME}
 				${INCLUDE_DIR}/OmniSampleLibrary.h
 				source/SamplePlayer.cpp
 				${INCLUDE_DIR}/Audio/SamplePlayer.h
+				source/ChannelComponent.cpp
+				${INCLUDE_DIR}/GUI/SampleView/ChannelComponent.h
         ${INCLUDE_DIR}/PluginProcessor.h
 )
 
