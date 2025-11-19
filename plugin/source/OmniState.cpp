@@ -61,6 +61,8 @@ static apvts::ParameterLayout getParamLayout() {
   return layout;
 }
 
+//------------------------------------------------------------------
+
 static ValueTree defaultSampleState() {
   ValueTree vt(ID::OmniDrums_sampleState);
   // set up default samples

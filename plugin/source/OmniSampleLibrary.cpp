@@ -1,5 +1,6 @@
 #include "OmniDrums/OmniSampleLibrary.h"
 #include "DefautSampleData.h"
+#include "OmniDrums/Identifiers.h"
 #include "juce_audio_formats/juce_audio_formats.h"
 namespace FactorySamples {
 static void writeBinaryToFile(const SampleE& id, juce::File& dest) {
@@ -43,98 +44,102 @@ static void writeBinaryToFile(const SampleE& id, juce::File& dest) {
       break;
   }
 }
-static void initFactorySamples(juce::File libFolder) {
-  std::vector<juce::File> sampleFiles = {};
-  // 1. create all the child files in enum order
-  auto fClosedHat = libFolder.getChildFile("HiHats/defaultClosedHat.wav");
-  auto result = fClosedHat.create();
-  jassert(result.wasOk());
-  sampleFiles.push_back(fClosedHat);
 
-  auto fOpenHat = libFolder.getChildFile("HiHats/defaultOpenHat.wav");
-  result = fOpenHat.create();
-  jassert(result.wasOk());
-  sampleFiles.push_back(fOpenHat);
-
-  auto fHiTom = libFolder.getChildFile("Toms/defaultHiTom.wav");
-  result = fHiTom.create();
-  jassert(result.wasOk());
-  sampleFiles.push_back(fHiTom);
-
-  auto fMidTom = libFolder.getChildFile("Toms/defaultMidTom.wav");
-  result = fMidTom.create();
-  jassert(result.wasOk());
-  sampleFiles.push_back(fMidTom);
-
-  auto fLowTom = libFolder.getChildFile("Toms/defaultLowTom.wav");
-  result = fLowTom.create();
-  jassert(result.wasOk());
-  sampleFiles.push_back(fLowTom);
-
-  auto fRide = libFolder.getChildFile("Cymbals/defaultRide.wav");
-  result = fRide.create();
-  jassert(result.wasOk());
-  sampleFiles.push_back(fRide);
-
-  auto fSnare = libFolder.getChildFile("Snares/defaultSnare.wav");
-  result = fSnare.create();
-  jassert(result.wasOk());
-  sampleFiles.push_back(fSnare);
-
-  auto fKick = libFolder.getChildFile("Kicks/defaultKick.wav");
-  result = fKick.create();
-  jassert(result.wasOk());
-  sampleFiles.push_back(fKick);
-
-  // 2. now copy the appropriate binary data into each file
-  for (size_t i = 0; i < sampleFiles.size(); ++i) {
-    writeBinaryToFile((SampleE)i, sampleFiles[i]);
-  }
-}
-
-juce::File getSampleFile(const SampleE& id) {
-  auto libFolder = OmniSampleLibrary::getSampleLibFolder();
-  juce::File file;
+juce::File getSampleFile(const SampleE& id, const juce::File& libFolder) {
   switch (id) {
     case closedHat:
-      return libFolder.getChildFile("HiHats/defaultClosedHat.wav");
+      return libFolder.getChildFile(stringFor(DrumCategE::hiHat) +
+                                    "/defaultClosedHat.wav");
       break;
     case openHat:
-      return libFolder.getChildFile("HiHats/defaultOpenHat.wav");
+      return libFolder.getChildFile(stringFor(DrumCategE::hiHat) +
+                                    "/defaultOpenHat.wav");
       break;
     case hiTom:
-      return libFolder.getChildFile("Toms/defaultHiTom.wav");
+      return libFolder.getChildFile(stringFor(DrumCategE::tom) +
+                                    "/defaultHiTom.wav");
       break;
     case midTom:
-      return libFolder.getChildFile("Toms/defaultMidTom.wav");
+      return libFolder.getChildFile(stringFor(DrumCategE::tom) +
+                                    "/defaultMidTom.wav");
       break;
     case lowTom:
-      return libFolder.getChildFile("Toms/defaultLowTom.wav");
+      return libFolder.getChildFile(stringFor(DrumCategE::tom) +
+                                    "/defaultLowTom.wav");
       break;
     case ride:
-      return libFolder.getChildFile("Cymbals/defaultRide.wav");
+      return libFolder.getChildFile(stringFor(DrumCategE::ride) +
+                                    "/defaultRide.wav");
       break;
     case snare:
-      return libFolder.getChildFile("Snares/defaultSnare.wav");
+      return libFolder.getChildFile(stringFor(DrumCategE::snare) +
+                                    "/defaultSnare.wav");
       break;
     case kick:
-      return libFolder.getChildFile("Kicks/defaultKick.wav");
+      return libFolder.getChildFile(stringFor(DrumCategE::kick) +
+                                    "/defaultKick.wav");
       break;
   }
   jassert(false);
   return juce::File();
 }
 
-juce::AudioFormatReader* getReader(const SampleE& id) {
-  static juce::AudioFormatManager manager;
-  static bool managerPrepared = false;
-  if (!managerPrepared) {
-    manager.registerBasicFormats();
-    managerPrepared = true;
+static void initFactorySamples(juce::File libFolder) {
+  // 1. create child folders for each drum category
+  for (int i = 0; i < NUM_DRUM_CATEGORIES; ++i) {
+    auto folder = libFolder.getChildFile(drumCategoryNames[i]);
+    auto dirResult = folder.createDirectory();
+    jassert(dirResult.wasOk());
   }
-  auto file = getSampleFile(id);
-  return manager.createReaderFor(file);
+
+  // 2. create all the child files in enum order
+  std::vector<juce::File> sampleFiles = {};
+  auto fClosedHat = getSampleFile(SampleE::closedHat, libFolder);
+  auto result = fClosedHat.create();
+  jassert(result.wasOk());
+  sampleFiles.push_back(fClosedHat);
+
+  auto fOpenHat = getSampleFile(SampleE::openHat, libFolder);
+  result = fOpenHat.create();
+  jassert(result.wasOk());
+  sampleFiles.push_back(fOpenHat);
+
+  auto fHiTom = getSampleFile(SampleE::hiTom, libFolder);
+  result = fHiTom.create();
+  jassert(result.wasOk());
+  sampleFiles.push_back(fHiTom);
+
+  auto fMidTom = getSampleFile(SampleE::midTom, libFolder);
+  result = fMidTom.create();
+  jassert(result.wasOk());
+  sampleFiles.push_back(fMidTom);
+
+  auto fLowTom = getSampleFile(SampleE::lowTom, libFolder);
+  result = fLowTom.create();
+  jassert(result.wasOk());
+  sampleFiles.push_back(fLowTom);
+
+  auto fRide = getSampleFile(SampleE::ride, libFolder);
+  result = fRide.create();
+  jassert(result.wasOk());
+  sampleFiles.push_back(fRide);
+
+  auto fSnare = getSampleFile(SampleE::snare, libFolder);
+  result = fSnare.create();
+  jassert(result.wasOk());
+  sampleFiles.push_back(fSnare);
+
+  auto fKick = getSampleFile(SampleE::kick, libFolder);
+  result = fKick.create();
+  jassert(result.wasOk());
+  sampleFiles.push_back(fKick);
+
+  // 3. now copy the appropriate binary data into each file
+  for (size_t i = 0; i < sampleFiles.size(); ++i) {
+    writeBinaryToFile((SampleE)i, sampleFiles[i]);
+  }
 }
+
 }  // namespace FactorySamples
 
 //===================================================
@@ -145,6 +150,8 @@ juce::File OmniSampleLibrary::getSampleLibFolder() {
   jassert(appData.exists() && appData.isDirectory());
   auto libFolder = appData.getChildFile("OmniDrumsSamples");
   if (!libFolder.exists() || !libFolder.isDirectory()) {
+    auto result = libFolder.createDirectory();
+    jassert(result.wasOk());
     FactorySamples::initFactorySamples(libFolder);
   }
   return libFolder;

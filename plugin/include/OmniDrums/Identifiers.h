@@ -38,6 +38,24 @@ frange_t rangeWithCenter(float min, float max, float center);
 #define PAN_MAX 100.0f
 #define PAN_DEFAULT 0.0f
 
+#define NUM_DRUM_CATEGORIES 9
+enum DrumCategE {
+  kick,
+  snare,
+  hiHat,
+  tom,
+  ride,
+  crash,
+  clap,
+  percussion,
+  other
+};
+const juce::StringArray drumCategoryNames = {"Kick", "Snare",      "Hi-hat",
+                                             "Tom",  "Ride",       "Crash",
+                                             "Clap", "Percussion", "Other"};
+inline String stringFor(const DrumCategE& categ) {
+  return drumCategoryNames[(int)categ];
+}
 // convert between MIDI note and channel num
 // int channelNumForNote(int midiNote);
 // int noteForChannelNum(int channelNum);
