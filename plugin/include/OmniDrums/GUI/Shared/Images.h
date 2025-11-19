@@ -13,7 +13,9 @@ enum AssetE {
   ThumbOff,
   DrumBkgnd,
   UpperBarBkgnd,
-  VuMeter
+  VuMeter,
+  DrumPadOn,
+  DrumPadOff
 };
 juce::Image getImage(const AssetE& id);
 }  // namespace Assets

@@ -23,6 +23,10 @@ juce::Image getImage(const AssetE& id) {
                                       AssetData::UpperBarBkgnd_296x84_pngSize);
   static juce::Image iVuMeter = juce::ImageFileFormat::loadFrom(
       AssetData::VuMeter_28x240_png, AssetData::VuMeter_28x240_pngSize);
+  static juce::Image iDrumPadOff = juce::ImageFileFormat::loadFrom(
+      AssetData::DrumPadOff_170x170_png, AssetData::DrumPadOff_170x170_pngSize);
+  static juce::Image iDrumPadOn = juce::ImageFileFormat::loadFrom(
+      AssetData::DrumPadOn_170x170_png, AssetData::DrumPadOn_170x170_pngSize);
   switch (id) {
     case GradBar:
       return iGradBar;
@@ -48,7 +52,14 @@ juce::Image getImage(const AssetE& id) {
     case VuMeter:
       return iVuMeter;
       break;
+    case DrumPadOff:
+      return iDrumPadOff;
+      break;
+    case DrumPadOn:
+      return iDrumPadOn;
+      break;
     default:
+
       jassert(false);
       return iKnobTop;
       break;

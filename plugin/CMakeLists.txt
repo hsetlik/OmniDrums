@@ -40,7 +40,8 @@ set(ASSET_FILES
 "${ASSETS_DIR}/DrumIconBkgnd_60x62.png"
 "${ASSETS_DIR}/UpperBarBkgnd_296x84.png"
 "${ASSETS_DIR}/VuMeter_28x240.png"
-
+"${ASSETS_DIR}/DrumPadOff_170x170.png"
+"${ASSETS_DIR}/DrumPadOn_170x170.png"
 )
 
 juce_add_binary_data(

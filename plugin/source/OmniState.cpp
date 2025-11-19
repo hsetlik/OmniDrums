@@ -3,6 +3,40 @@
 #include "OmniDrums/Identifiers.h"
 #include "OmniDrums/OmniSampleLibrary.h"
 
+//------------------------------------------------------------------
+
+static ValueTree defaultSampleState() {
+  ValueTree vt(ID::OmniDrums_sampleState);
+  // set up default samples
+  for (int i = 0; i < NUM_FACTORY_SAMPLES; ++i) {
+    auto sampleState =
+        FactorySamples::getDefaultSampleState((FactorySamples::SampleE)i);
+    vt.appendChild(sampleState, nullptr);
+  }
+  return vt;
+}
+
+//------------------------------------------------------------------
+static std::vector<int> getDefaultActiveChannels() {
+  std::vector<int> chans = {};
+  auto state = defaultSampleState();
+  for (int i = 0; i < state.getNumChildren(); ++i) {
+    auto sample = state.getChild(i);
+    jassert(sample.hasType(ID::OmniPlayerSample));
+    const int chan = sample[ID::sampleDrumChannel];
+    chans.push_back(chan);
+  }
+  return chans;
+}
+static bool isActiveDefault(int channelIdx) {
+  static std::vector<int> activeChannels = getDefaultActiveChannels();
+  for (auto& c : activeChannels) {
+    if (c == channelIdx)
+      return true;
+  }
+  return false;
+}
+
 // helpers for APVTS components
 static std::unique_ptr<juce::AudioParameterFloat> buildFloatParam(
     const String& id,
@@ -39,7 +73,7 @@ static apvts::ParameterLayout getParamLayout() {
     // active
     auto activeID = ID::channelActive.toString() + iStr;
     auto activeName = "Channel " + String(i + 1) + " active";
-    layout.add(buildBoolParam(activeID, activeName, false));
+    layout.add(buildBoolParam(activeID, activeName, isActiveDefault(i)));
     // gain
     auto gainID = ID::channelGain.toString() + iStr;
     auto gainName = "Channel " + String(i + 1) + " gain";
@@ -62,18 +96,6 @@ static apvts::ParameterLayout getParamLayout() {
   return layout;
 }
 
-//------------------------------------------------------------------
-
-static ValueTree defaultSampleState() {
-  ValueTree vt(ID::OmniDrums_sampleState);
-  // set up default samples
-  for (int i = 0; i < NUM_FACTORY_SAMPLES; ++i) {
-    auto sampleState =
-        FactorySamples::getDefaultSampleState((FactorySamples::SampleE)i);
-    vt.appendChild(sampleState, nullptr);
-  }
-  return vt;
-}
 //===================================================
 OmniState::OmniState(juce::AudioProcessor& proc)
     : audioState(proc, nullptr, ID::OmniDrums_audioState, getParamLayout()),
