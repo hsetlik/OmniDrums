@@ -37,20 +37,19 @@ private:
   std::unique_ptr<float[]> buffer;
 };
 
-class SamplePlayer : public SampleRateListener, public juce::AsyncUpdater {
+class SamplePlayer : public SampleRateListener {
 private:
   juce::File sampleFile;
-  bool bufferPrepared = false;
-  bool isPlaying = false;
-  size_t currentIdx = 0;
   std::unique_ptr<SamplePlaybackBuffer> buf;
 
 public:
   SamplePlayer(const juce::File& sample = FactorySamples::getSampleFile(
                    FactorySamples::kick,
                    OmniSampleLibrary::getSampleLibFolder()));
+  ~SamplePlayer() override;
   void sampleRateSet(double sr) override;
-  void handleAsyncUpdate() override;
-  // get the next output value & update this player's internal state accordingly
-  float tick();
+  size_t lengthInSamples() const { return buf->lengthInSamples; }
+  // access the underlying playback buffer
+  float operator[](size_t index) const { return buf->getValue(index); }
+  float getValue(size_t index) const { return buf->getValue(index); }
 };

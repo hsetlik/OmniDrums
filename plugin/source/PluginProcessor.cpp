@@ -1,5 +1,6 @@
 #include "OmniDrums/PluginProcessor.h"
 
+#include "OmniDrums/Audio/SamplePlayer.h"
 #include "OmniDrums/Identifiers.h"
 #include "OmniDrums/PluginEditor.h"
 namespace audio_plugin {
@@ -80,6 +81,7 @@ void OmniDrumsAudioProcessor::prepareToPlay(double sampleRate,
                                             int samplesPerBlock) {
   // Use this method as the place to do any pre-playback
   // initialisation that you need..
+  AudioFile::setSampleRate(sampleRate);
   juce::ignoreUnused(sampleRate, samplesPerBlock);
 }
 
