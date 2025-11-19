@@ -64,6 +64,9 @@ inline String stringFor(const DrumCategE& categ) {
 // standard's drum map per this website:
 // https://qsrdrums.com/webhelp-responsive/References/r_general_midi_drum_kit.html
 const std::unordered_map<int, String>& generalMIDIDrumNames();
+String getMIDINoteName(int note);
+
+//--------------------------------------------------------------
 
 #define DECLARE_ID(name) const juce::Identifier name(#name);
 

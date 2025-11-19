@@ -4,11 +4,10 @@
 #include "Identifiers.h"
 #include "OmniSampleLibrary.h"
 class OmniState {
-private:
+public:
   apvts audioState;
   ValueTree samplesState;
   OmniSampleLibrary sampleLib;
 
-public:
   OmniState(juce::AudioProcessor& proc);
 };

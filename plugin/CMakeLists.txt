@@ -137,6 +137,12 @@ target_sources(${PROJECT_NAME}
 				${INCLUDE_DIR}/Audio/SamplePlayer.h
 				source/ChannelComponent.cpp
 				${INCLUDE_DIR}/GUI/SampleView/ChannelComponent.h
+				source/DrumChannel.cpp
+				${INCLUDE_DIR}/Audio/Core/DrumChannel.h
+				source/SampleCache.cpp
+				${INCLUDE_DIR}/Audio/Core/SampleCache.h
+				source/OmniEngine.cpp
+				${INCLUDE_DIR}/Audio/Core/OmniEngine.h
         ${INCLUDE_DIR}/PluginProcessor.h
 )
 
