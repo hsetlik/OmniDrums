@@ -209,4 +209,17 @@ juce::File OmniSampleLibrary::getSampleLibFolder() {
 
 OmniSampleLibrary::OmniSampleLibrary() : libFolder(getSampleLibFolder()) {
   jassert(libFolder.exists() && libFolder.isDirectory());
+  // TODO: should go through the file system load info abt
+  // everything here
+}
+
+juce::File OmniSampleLibrary::fileForSample(
+    const ValueTree& sampleState) const {
+  jassert(sampleState.hasType(ID::OmniPlayerSample));
+  const int iCategory = sampleState[ID::sampleDrumCategory];
+  const String fileName = sampleState[ID::sampleFileName];
+  auto file =
+      libFolder.getChildFile(drumCategoryNames[iCategory] + "/" + fileName);
+  jassert(file.existsAsFile());
+  return file;
 }

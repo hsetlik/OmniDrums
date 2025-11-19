@@ -49,6 +49,7 @@ public:
   ~SamplePlayer() override;
   void sampleRateSet(double sr) override;
   size_t lengthInSamples() const { return buf->lengthInSamples; }
+  String getSampleName() const { return sampleFile.getFileName(); }
   // access the underlying playback buffer
   float operator[](size_t index) const { return buf->getValue(index); }
   float getValue(size_t index) const { return buf->getValue(index); }

@@ -17,4 +17,5 @@ private:
 public:
   static juce::File getSampleLibFolder();
   OmniSampleLibrary();
+  juce::File fileForSample(const ValueTree& sampleState) const;
 };
