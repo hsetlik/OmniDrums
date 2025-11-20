@@ -16,6 +16,9 @@ set(ICON_FILES
 "${ICONS_DIR}/Tom_256.png"
 "${ICONS_DIR}/LibOpen_256.png"
 "${ICONS_DIR}/LibClosed_256.png"
+"${ICONS_DIR}/Crash_256.png"
+"${ICONS_DIR}/Clap_256.png"
+"${ICONS_DIR}/Percussion_256.png"
 )
 
 

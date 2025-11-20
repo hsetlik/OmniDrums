@@ -81,6 +81,12 @@ juce::Image getImage(const IconE& id) {
       IconData::Ride_256_png, IconData::Ride_256_pngSize);
   static juce::Image iTom = juce::ImageFileFormat::loadFrom(
       IconData::Tom_256_png, IconData::Tom_256_pngSize);
+  static juce::Image iCrash = juce::ImageFileFormat::loadFrom(
+      IconData::Crash_256_png, IconData::Crash_256_pngSize);
+  static juce::Image iClap = juce::ImageFileFormat::loadFrom(
+      IconData::Clap_256_png, IconData::Clap_256_pngSize);
+  static juce::Image iPercussion = juce::ImageFileFormat::loadFrom(
+      IconData::Percussion_256_png, IconData::Percussion_256_pngSize);
   static juce::Image iLibOpen = juce::ImageFileFormat::loadFrom(
       IconData::LibOpen_256_png, IconData::LibOpen_256_pngSize);
   static juce::Image iLibClosed = juce::ImageFileFormat::loadFrom(
@@ -104,10 +110,22 @@ juce::Image getImage(const IconE& id) {
       break;
     case Tom:
       return iTom;
+      break;
+    case Crash:
+      return iCrash;
+      break;
+    case Clap:
+      return iClap;
+      break;
+    case Percussion:
+      return iPercussion;
+      break;
     case LibOpen:
       return iLibOpen;
+      break;
     case LibClosed:
       return iLibClosed;
+      break;
     default:
       jassert(false);
       return iKick;

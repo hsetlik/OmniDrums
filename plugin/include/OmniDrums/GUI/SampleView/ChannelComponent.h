@@ -12,6 +12,7 @@ private:
   slider_attach_ptr gainAttach;
   juce::Slider gainSlider;
   slider_attach_ptr panAttach;
+  juce::Slider panSlider;
 
 public:
   OmniChannelComponent(OmniState* s, int chanIdx);
@@ -19,4 +20,3 @@ public:
   void resized() override;
   void paint(juce::Graphics& g) override;
 };
-
