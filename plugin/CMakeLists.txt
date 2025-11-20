@@ -101,7 +101,7 @@ juce_add_binary_data(
 juce_add_plugin(${PROJECT_NAME}
     COMPANY_NAME Setlik # change this
     IS_SYNTH true # may change this
-    NEEDS_MIDI_INPUT FALSE # may change this
+    NEEDS_MIDI_INPUT true # may change this
     NEEDS_MIDI_OUTPUT FALSE # may change this
     PLUGIN_MANUFACTURER_CODE STLK # change this
     PLUGIN_CODE OMND # change this

@@ -82,7 +82,7 @@ void OmniDrumsAudioProcessor::prepareToPlay(double sampleRate,
   // Use this method as the place to do any pre-playback
   // initialisation that you need..
   AudioFile::setSampleRate(sampleRate);
-  juce::ignoreUnused(sampleRate, samplesPerBlock);
+  juce::ignoreUnused(samplesPerBlock);
 }
 
 void OmniDrumsAudioProcessor::releaseResources() {

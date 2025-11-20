@@ -18,4 +18,5 @@ public:
   void tick();
   float getOutput() const { return lastOutput; }
   void trigger(float velocity);
+  void setPlayer(SamplePlayer* p) { player = p; }
 };
