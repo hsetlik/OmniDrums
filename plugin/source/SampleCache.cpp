@@ -6,7 +6,7 @@ SampleCache::SampleCache(OmniState* s) : state(s) {
   if (state->samplesState.getNumChildren() > 0) {
     for (int c = 0; c < state->samplesState.getNumChildren(); ++c) {
       auto child = state->samplesState.getChild(c);
-      jassert(child.hasType(ID::OmniPlayerSample));
+      jassert(child.hasType(ID::OMNI_PLAYER_SAMPLE));
       addPlayerForTree(child);
     }
   }
@@ -63,8 +63,8 @@ void SampleCache::cleanupSampleData() {
 }
 
 void SampleCache::valueTreeChildAdded(ValueTree& parent, ValueTree& newChild) {
-  jassert(parent.hasType(ID::OmniDrums_sampleState) &&
-          newChild.hasType(ID::OmniPlayerSample));
+  jassert(parent.hasType(ID::OMNI_SAMPLES_STATE) &&
+          newChild.hasType(ID::OMNI_PLAYER_SAMPLE));
   addPlayerForTree(newChild);
 }
 
@@ -72,8 +72,8 @@ void SampleCache::valueTreeChildRemoved(ValueTree& parent,
                                         ValueTree& removedChild,
                                         int index) {
   juce::ignoreUnused(index);
-  jassert(parent.hasType(ID::OmniDrums_sampleState) &&
-          removedChild.hasType(ID::OmniPlayerSample));
+  jassert(parent.hasType(ID::OMNI_SAMPLES_STATE) &&
+          removedChild.hasType(ID::OMNI_PLAYER_SAMPLE));
   const String name = removedChild[ID::sampleFileName];
   auto* player = playerWithName(name);
   if (!isQueuedToFree(player) && player != nullptr) {

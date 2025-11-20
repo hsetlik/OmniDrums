@@ -28,6 +28,16 @@ public:
 };
 
 //============================================================
+class SampleNameComponent : public Component, public ValueTree::Listener {
+private:
+  OmniState* const state;
+  const int channelIdx;
+
+public:
+  SampleNameComponent(OmniState* s, int idx);
+  void paint(juce::Graphics& g) override;
+};
+//============================================================
 class OmniChannelComponent : public Component {
 private:
   OmniState* const state;
@@ -36,6 +46,7 @@ private:
   juce::Slider gainSlider;
   slider_attach_ptr panAttach;
   juce::Slider panSlider;
+  DrumPadComponent drumPad;
 
 public:
   OmniChannelComponent(OmniState* s, int chanIdx);

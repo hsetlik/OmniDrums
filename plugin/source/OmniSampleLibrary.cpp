@@ -1,7 +1,9 @@
 #include "OmniDrums/OmniSampleLibrary.h"
 #include "DefautSampleData.h"
+#include "OmniDrums/Audio/SamplePlayer.h"
 #include "OmniDrums/Identifiers.h"
 #include "juce_audio_formats/juce_audio_formats.h"
+#include "juce_core/juce_core.h"
 namespace FactorySamples {
 static void writeBinaryToFile(const SampleE& id, juce::File& dest) {
   switch (id) {
@@ -141,7 +143,7 @@ static void initFactorySamples(juce::File libFolder) {
 }
 
 ValueTree getDefaultSampleState(const SampleE& id) {
-  ValueTree vt(ID::OmniPlayerSample);
+  ValueTree vt(ID::OMNI_PLAYER_SAMPLE);
   switch (id) {
     case closedHat:
       vt.setProperty(ID::sampleDrumCategory, (int)DrumCategE::hiHat, nullptr);
@@ -207,15 +209,75 @@ juce::File OmniSampleLibrary::getSampleLibFolder() {
   return libFolder;
 }
 
-OmniSampleLibrary::OmniSampleLibrary() : libFolder(getSampleLibFolder()) {
+static ValueTree buildLibChildTree(int categID, const String& fileName) {
+  ValueTree vt(ID::SAMPLE_LIB_ENTRY);
+  vt.setProperty(ID::sampleDrumCategory, categID, nullptr);
+  vt.setProperty(ID::sampleFileName, fileName, nullptr);
+  auto now = juce::Time::getCurrentTime();
+  vt.setProperty(ID::libSampleDateAdded, now.toISO8601(true), nullptr);
+  auto file = OmniSampleLibrary::getSampleLibFolder().getChildFile(
+      drumCategoryNames[categID] + "/" + fileName);
+  jassert(file.existsAsFile());
+  auto reader = juce::rawToUniquePtr(AudioFile::getReaderFor(file));
+  jassert(reader != nullptr);
+  auto lengthSeconds = (double)reader->lengthInSamples / reader->sampleRate;
+  const int lengthMs = (int)(lengthSeconds * 1000.0f);
+  vt.setProperty(ID::libSampleLengthMs, lengthMs, nullptr);
+  return vt;
+}
+
+ValueTree OmniSampleLibrary::buildDefaultLibrary() {
+  ValueTree vt(ID::OMNI_SAMPLE_LIB);
+  for (int i = 0; i < NUM_DRUM_CATEGORIES; ++i) {
+    auto folder = getSampleLibFolder().getChildFile(drumCategoryNames[i]);
+    auto files = folder.findChildFiles(juce::File::findFiles, true);
+    for (int f = 0; f < files.size(); ++f) {
+      auto name = files[f].getRelativePathFrom(folder);
+      auto childTree = buildLibChildTree(i, name);
+      vt.appendChild(childTree, nullptr);
+    }
+  }
+  return vt;
+}
+
+juce::File OmniSampleLibrary::getLibraryDataFile() {
+  auto appData =
+      juce::File::getSpecialLocation(juce::File::userApplicationDataDirectory);
+  jassert(appData.exists() && appData.isDirectory());
+  auto libFile = appData.getChildFile("SampleLibraryData.odlib");
+  if (!libFile.existsAsFile()) {
+    auto result = libFile.create();
+    jassert(result.wasOk());
+    // now create a tree for whatever samples exist and write it to the file
+    auto vt = buildDefaultLibrary();
+    auto libString = vt.toXmlString();
+    jassert(libFile.replaceWithText(libString));
+  }
+  return libFile;
+}
+
+static ValueTree loadFromXmlFile(const juce::File& libFile) {
+  auto xmlStr = libFile.loadFileAsString();
+  return ValueTree::fromXml(xmlStr);
+}
+
+OmniSampleLibrary::OmniSampleLibrary()
+    : libFolder(getSampleLibFolder()),
+      sampleLibState(loadFromXmlFile(getLibraryDataFile())) {
   jassert(libFolder.exists() && libFolder.isDirectory());
   // TODO: should go through the file system load info abt
   // everything here
 }
 
+OmniSampleLibrary::~OmniSampleLibrary() {
+  auto xmlStr = sampleLibState.toXmlString();
+  auto file = getLibraryDataFile();
+  jassert(file.replaceWithText(xmlStr));
+}
+
 juce::File OmniSampleLibrary::fileForSample(
     const ValueTree& sampleState) const {
-  jassert(sampleState.hasType(ID::OmniPlayerSample));
+  jassert(sampleState.hasType(ID::OMNI_PLAYER_SAMPLE));
   const int iCategory = sampleState[ID::sampleDrumCategory];
   const String fileName = sampleState[ID::sampleFileName];
   auto file =

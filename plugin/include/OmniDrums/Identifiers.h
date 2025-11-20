@@ -78,8 +78,8 @@ String getMIDINoteName(int note);
 
 namespace ID {
 // top level ID for the apvts
-DECLARE_ID(OmniDrums_audioState)
-DECLARE_ID(OmniDrums_sampleState)
+DECLARE_ID(OMNI_AUDIO_STATE)
+DECLARE_ID(OMNI_SAMPLES_STATE)
 
 // per-channel audio params
 DECLARE_ID(channelActive)
@@ -89,13 +89,21 @@ DECLARE_ID(channelMidiNum)
 DECLARE_ID(channelCompressorMix)
 
 // sample library stuff-------------------------
-DECLARE_ID(OmniPlayerSample)    // type for the child tree that represents a
+DECLARE_ID(OMNI_PLAYER_SAMPLE)  // type for the child tree that represents a
                                 // sample as loaded into a drum channel
 DECLARE_ID(sampleDrumCategory)  // int representing the category folder we can
                                 // find this sample in
 DECLARE_ID(sampleFileName)      // string path relative to the category folder
 DECLARE_ID(
     sampleDrumChannel)  // index of the drum channel this sample is loaded to
+
+// top level ID for our system-wide sample library file
+DECLARE_ID(OMNI_SAMPLE_LIB)
+// type for the child trees
+DECLARE_ID(SAMPLE_LIB_ENTRY)
+
+DECLARE_ID(libSampleDateAdded)
+DECLARE_ID(libSampleLengthMs)
 
 }  // namespace ID
 

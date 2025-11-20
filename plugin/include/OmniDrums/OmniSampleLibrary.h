@@ -10,12 +10,18 @@ juce::File getSampleFile(const SampleE& id, const juce::File& libFolder);
 ValueTree getDefaultSampleState(const SampleE& id);
 }  // namespace FactorySamples
 
+//========================================
+
 class OmniSampleLibrary {
 private:
   juce::File libFolder;
+  ValueTree sampleLibState;
+  static ValueTree buildDefaultLibrary();
 
 public:
   static juce::File getSampleLibFolder();
+  static juce::File getLibraryDataFile();
   OmniSampleLibrary();
+  ~OmniSampleLibrary();
   juce::File fileForSample(const ValueTree& sampleState) const;
 };

@@ -6,7 +6,7 @@
 //------------------------------------------------------------------
 
 static ValueTree defaultSampleState() {
-  ValueTree vt(ID::OmniDrums_sampleState);
+  ValueTree vt(ID::OMNI_SAMPLES_STATE);
   // set up default samples
   for (int i = 0; i < NUM_FACTORY_SAMPLES; ++i) {
     auto sampleState =
@@ -22,7 +22,7 @@ static std::vector<int> getDefaultActiveChannels() {
   auto state = defaultSampleState();
   for (int i = 0; i < state.getNumChildren(); ++i) {
     auto sample = state.getChild(i);
-    jassert(sample.hasType(ID::OmniPlayerSample));
+    jassert(sample.hasType(ID::OMNI_PLAYER_SAMPLE));
     const int chan = sample[ID::sampleDrumChannel];
     chans.push_back(chan);
   }
@@ -105,7 +105,7 @@ static apvts::ParameterLayout getParamLayout() {
 //===================================================
 
 OmniState::OmniState(juce::AudioProcessor& proc)
-    : audioState(proc, nullptr, ID::OmniDrums_audioState, getParamLayout()),
+    : audioState(proc, nullptr, ID::OMNI_AUDIO_STATE, getParamLayout()),
       samplesState(defaultSampleState()) {}
 
 float OmniState::loadAudioParameter(const String& paramID) const {
