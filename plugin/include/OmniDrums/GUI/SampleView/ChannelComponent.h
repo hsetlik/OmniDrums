@@ -8,10 +8,17 @@
 class DrumPadComponent : public Component, public juce::Timer {
 private:
   OmniState* const state;
+  const int channelIdx;
   bool needsRepaint = false;
+  bool shouldDrawActive = false;
+  int midiNote = 36;
+  DrumCategE currentCateg = DrumCategE::percussion;
+  juce::Image iconToDraw;
+
+  void updateIcon();
+  void updateMidiNote();
 
 public:
-  const int channelIdx;
   DrumPadComponent(OmniState* s, int idx);
   void paint(juce::Graphics& g) override;
   void resized() override;
