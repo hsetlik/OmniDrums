@@ -1,6 +1,13 @@
 #pragma once
 #include "SampleCache.h"
 
+// this guy holds the data from the APVTS params.
+// should update once per audio block
+struct channel_audio_state {
+  float gainLinear = 1.0f;
+  float panLinear = 0.5f;
+};
+
 class DrumChannel {
 private:
   SamplePlayer* player = nullptr;

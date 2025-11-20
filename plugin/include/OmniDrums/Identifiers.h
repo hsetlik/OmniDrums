@@ -40,6 +40,10 @@ frange_t rangeWithCenter(float min, float max, float center);
 #define PAN_MAX 100.0f
 #define PAN_DEFAULT 0.0f
 
+#define WET_DRY_MIN 0.0f
+#define WET_DRY_MAX 1.0f
+#define WET_DRY_DEFAULT 0.7f
+
 #define NUM_DRUM_CATEGORIES 9
 enum DrumCategE {
   kick,
@@ -80,6 +84,7 @@ DECLARE_ID(channelActive)
 DECLARE_ID(channelPan)
 DECLARE_ID(channelGain)
 DECLARE_ID(channelMidiNum)
+DECLARE_ID(channelCompressorMix)
 
 // sample library stuff-------------------------
 DECLARE_ID(OmniPlayerSample)    // type for the child tree that represents a

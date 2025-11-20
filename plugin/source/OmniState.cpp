@@ -85,6 +85,12 @@ static apvts::ParameterLayout getParamLayout() {
     auto panName = "Channel " + String(i + 1) + " pan";
     auto panRange = rangeWithCenter(PAN_MIN, PAN_MAX, PAN_DEFAULT);
     layout.add(buildFloatParam(panID, panName, panRange, PAN_DEFAULT));
+    // compressor wet/dry
+    auto wetDryID = ID::channelCompressorMix.toString() + iStr;
+    auto wetDryName = "Channel " + String(i + 1) + " compressor wet/dry mix";
+    auto wetDryRange = rangeWithCenter(WET_DRY_MIN, WET_DRY_MAX, 0.5f);
+    layout.add(
+        buildFloatParam(wetDryID, wetDryName, wetDryRange, WET_DRY_DEFAULT));
     // midi note
     auto noteID = ID::channelMidiNum.toString() + iStr;
     auto noteName = "Channel " + String(i + 1) + " MIDI note";
