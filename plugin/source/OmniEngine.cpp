@@ -61,18 +61,18 @@ void OmniEngine::renderBlock(juce::AudioBuffer<float>& buffer,
   loadMidiMessages(midiBuf, buffer.getNumSamples());
 
   // 3. iterate through the buffer
-  float lDry = 0.0f;
-  float rDry = 0.0f;
-  float lComp = 0.0f;
-  float rComp = 0.0f;
-  auto lBuf = buffer.getWritePointer(0);
-  auto rBuf = buffer.getWritePointer(1);
   for (int s = 0; s < buffer.getNumSamples(); ++s) {
+    float lDry = 0.0f;
+    float rDry = 0.0f;
+    float lComp = 0.0f;
+    float rComp = 0.0f;
     // before touching the channels, check if it's time to handle the next
     // MIDI message
-    if (midiQueue.front().sampleIdx == s) {
-      handleMidiMessage(midiQueue.front().message);
-      midiQueue.pop();
+    if (!midiQueue.empty()) {
+      while (midiQueue.front().sampleIdx == s) {
+        handleMidiMessage(midiQueue.front().message);
+        midiQueue.pop();
+      }
     }
     for (int c = 0; c < playingChannels.numPlayingChannels(); ++c) {
       auto chanIdx = playingChannels[c];
@@ -80,10 +80,9 @@ void OmniEngine::renderBlock(juce::AudioBuffer<float>& buffer,
       drumChannels[chanIdx]->renderSamplesDryMix(lDry, rDry);
       drumChannels[chanIdx]->renderSamplesCompressorMix(lComp, rComp);
     }
-    // TODO: the compressor work happens here, for now we'll
-    //  just write the sum of both samples to the output
-    lBuf[s] = lDry + lComp;
-    rBuf[s] = rDry + rComp;
+    // TODO: the compressor work happens here
+    buffer.setSample(0, s, lDry + lComp);
+    buffer.setSample(1, s, rDry + rComp);
   }
   // make sure we handled every midi event
   jassert(midiQueue.empty());

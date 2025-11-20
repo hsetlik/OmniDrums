@@ -3,6 +3,13 @@
 #include "OmniDrums/Identifiers.h"
 
 SampleCache::SampleCache(OmniState* s) : state(s) {
+  if (state->samplesState.getNumChildren() > 0) {
+    for (int c = 0; c < state->samplesState.getNumChildren(); ++c) {
+      auto child = state->samplesState.getChild(c);
+      jassert(child.hasType(ID::OmniPlayerSample));
+      addPlayerForTree(child);
+    }
+  }
   state->samplesState.addListener(this);
 }
 

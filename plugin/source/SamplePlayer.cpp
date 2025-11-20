@@ -1,22 +1,18 @@
 #pragma once
 #include "OmniDrums/Audio/SamplePlayer.h"
 #include <cmath>
+#include "juce_audio_formats/juce_audio_formats.h"
 #include "juce_core/juce_core.h"
 
 namespace AudioFile {
 // our state variables
 static double currentSampleRate = 44100.0f;
 static std::vector<SampleRateListener*> listeners = {};
-// formatManager/reader stuff
-static juce::AudioFormatManager manager;
-static bool managerPrepared = false;
 
 size_t samplesNeededFor(const juce::File& sample, double playbackSampleRate) {
-  if (!managerPrepared) {
-    manager.registerBasicFormats();
-    managerPrepared = true;
-  }
-  auto reader = manager.createReaderFor(sample);
+  juce::AudioFormatManager manager;
+  manager.registerBasicFormats();
+  auto reader = juce::rawToUniquePtr(manager.createReaderFor(sample));
   jassert(reader != nullptr);
   const double fileDurationSeconds =
       (double)reader->lengthInSamples / reader->sampleRate;
@@ -24,10 +20,8 @@ size_t samplesNeededFor(const juce::File& sample, double playbackSampleRate) {
 }
 
 juce::AudioFormatReader* getReaderFor(const juce::File& sample) {
-  if (!managerPrepared) {
-    manager.registerBasicFormats();
-    managerPrepared = true;
-  }
+  juce::AudioFormatManager manager;
+  manager.registerBasicFormats();
   return manager.createReaderFor(sample);
 }
 
@@ -92,7 +86,7 @@ SamplePlaybackBuffer::SamplePlaybackBuffer(const juce::File& sample,
     : playbackSampleRate(sampleRate),
       lengthInSamples(AudioFile::samplesNeededFor(sample, sampleRate)),
       buffer(new float[lengthInSamples]) {
-  auto reader = AudioFile::getReaderFor(sample);
+  auto reader = juce::rawToUniquePtr(AudioFile::getReaderFor(sample));
   jassert(reader != nullptr);
   // 1. load the file into an AudioBuffer (this handles sample type conversion
   // for us)
@@ -100,6 +94,7 @@ SamplePlaybackBuffer::SamplePlaybackBuffer(const juce::File& sample,
                                    (int)reader->lengthInSamples);
   jassert(
       reader->read(&fileBuf, 0, (int)reader->lengthInSamples, 0, true, true));
+
   // 2. scale/convert as needed and write into the buffer
   for (size_t s = 0; s < lengthInSamples; ++s) {
     const float pos = (float)s / (float)lengthInSamples;

@@ -74,7 +74,7 @@ void DrumChannel::renderSamplesDryMix(float& left, float& right) const {
 
 void DrumChannel::renderSamplesCompressorMix(float& left, float& right) const {
   left += lastOutput * audioState.pan * audioState.gainLinear *
-          (1.0f - audioState.compressorMix);
-  right += lastOutput * (1.0f - audioState.pan) * audioState.gainLinear *
-           (1.0f - audioState.compressorMix);
+          audioState.compressorMix;
+  right += lastOutput * (1.0f - audioState.pan) * audioState.gainLinear * 1.0f -
+           audioState.compressorMix;
 }
