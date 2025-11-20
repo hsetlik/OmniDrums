@@ -44,6 +44,8 @@ frange_t rangeWithCenter(float min, float max, float center);
 #define WET_DRY_MAX 1.0f
 #define WET_DRY_DEFAULT 0.7f
 
+#define MAX_REPAINT_HZ 30
+
 #define NUM_DRUM_CATEGORIES 9
 enum DrumCategE {
   kick,

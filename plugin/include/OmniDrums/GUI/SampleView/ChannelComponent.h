@@ -5,6 +5,22 @@
 #include "OmniDrums/Identifiers.h"
 #include "juce_graphics/juce_graphics.h"
 
+class DrumPadComponent : public Component, public juce::Timer {
+private:
+  OmniState* const state;
+  bool needsRepaint = false;
+
+public:
+  const int channelIdx;
+  DrumPadComponent(OmniState* s, int idx);
+  void paint(juce::Graphics& g) override;
+  void resized() override;
+  void timerCallback() override;
+  void mouseDown(const juce::MouseEvent& e) override;
+  void mouseUp(const juce::MouseEvent& e) override;
+};
+
+//============================================================
 class OmniChannelComponent : public Component {
 private:
   OmniState* const state;

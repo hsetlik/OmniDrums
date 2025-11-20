@@ -2,6 +2,8 @@
 #include "../../Common.h"
 #include "IconData.h"
 #include "AssetData.h"
+#include "OmniDrums/GUI/Shared/Color.h"
+#include "OmniDrums/Identifiers.h"
 
 namespace Assets {
 
@@ -37,4 +39,5 @@ enum IconE {
   LibClosed
 };
 juce::Image getImage(const IconE& id);
+juce::Image getDrumIconWithColor(const DrumCategE& id, const Color& color);
 }  // namespace Icons

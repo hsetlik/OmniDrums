@@ -35,6 +35,7 @@ void OmniEngine::prepareForBlock() {
 }
 
 void OmniEngine::loadMidiMessages(juce::MidiBuffer& midi, int maxSample) {
+  state->kbdState.processNextMidiBuffer(midi, 0, maxSample, true);
   for (auto it = midi.begin(); it != midi.end(); ++it) {
     auto metadata = *it;
     timed_midi_msg m;

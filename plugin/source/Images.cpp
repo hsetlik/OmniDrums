@@ -2,6 +2,7 @@
 #include "OmniDrums/GUI/Shared/Images.h"
 #include "AssetData.h"
 #include "IconData.h"
+#include "OmniDrums/Identifiers.h"
 
 namespace Assets {
 juce::Image getImage(const AssetE& id) {
@@ -132,4 +133,53 @@ juce::Image getImage(const IconE& id) {
       break;
   }
 }
+
+static juce::Image imgForDrumCateg(const DrumCategE& id) {
+  switch (id) {
+    case kick:
+      return getImage(IconE::Kick);
+    case snare:
+      return getImage(IconE::Snare);
+    case hiHat:
+      return getImage(IconE::OpenHat);
+    case tom:
+      return getImage(IconE::Tom);
+    case ride:
+      return getImage(IconE::Ride);
+    case crash:
+      return getImage(IconE::Crash);
+    case clap:
+      return getImage(IconE::Clap);
+    case percussion:
+      return getImage(IconE::Percussion);
+    case other:
+      return getImage(IconE::Percussion);
+    default:
+      jassert(false);
+      return getImage(IconE::Kick);
+  }
+}
+
+static juce::Image getCopyWithOpaqueColor(juce::Image& img,
+                                          const Color& color) {
+  if (!img.hasAlphaChannel()) {
+    img = img.convertedToFormat(juce::Image::ARGB);
+  }
+  // 1. figure out which pixels we need to make solid
+  juce::RectangleList<int> solids;
+  img.createSolidAreaMask(solids, 0.5f);
+
+  // 2. create the destination image & fill it appropriately
+  juce::Image destImg(juce::Image::ARGB, img.getWidth(), img.getHeight(), true);
+  juce::Graphics g(destImg);
+  g.setColour(color);
+  g.fillRectList(solids);
+  return destImg;
+}
+
+juce::Image getDrumIconWithColor(const DrumCategE& id, const Color& color) {
+  auto img = imgForDrumCateg(id);
+  return getCopyWithOpaqueColor(img, color);
+}
+
 }  // namespace Icons
