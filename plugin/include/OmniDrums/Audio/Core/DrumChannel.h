@@ -1,11 +1,27 @@
 #pragma once
 #include "SampleCache.h"
 
+// initialize the channel objects with a pointer to one of these such that
+// they can add & remove themselves from the list of channels that need
+// rendering
+class PlayingChannelSet {
+private:
+  std::vector<int> playingChannels;
+
+public:
+  PlayingChannelSet();
+  void channelStarted(int channel);
+  void channelFinished(int channel);
+  int numPlayingChannels() const { return (int)playingChannels.size(); }
+  int operator[](int index) const { return playingChannels[(size_t)index]; }
+};
+
 // this guy holds the data from the APVTS params.
 // should update once per audio block
 struct channel_audio_state {
   float gainLinear = 1.0f;
-  float panLinear = 0.5f;
+  float pan = 0.5f;
+  float compressorMix = 0.7f;
 };
 
 class DrumChannel {
@@ -21,9 +37,16 @@ private:
 
 public:
   const int channel;
-  DrumChannel(int c);
+  channel_audio_state audioState;
+  DrumChannel(int c, PlayingChannelSet* p);
   void tick();
-  float getOutput() const { return lastOutput; }
+  // float getOutput() const { return lastOutput; }
+  void renderSamplesDryMix(float& left, float& right) const;
+  void renderSamplesCompressorMix(float& left, float& right) const;
   void trigger(float velocity);
   void setPlayer(SamplePlayer* p) { player = p; }
+  bool inUse() const { return player != nullptr; }
+
+private:
+  PlayingChannelSet* const playingSet;
 };

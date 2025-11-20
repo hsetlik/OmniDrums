@@ -1,7 +1,7 @@
 #pragma once
 
 #include <juce_audio_processors/juce_audio_processors.h>
-#include "Common.h"
+#include "OmniDrums/Audio/Core/OmniEngine.h"
 #include "OmniDrums/OmniState.h"
 
 namespace audio_plugin {
@@ -33,6 +33,7 @@ public:
   void setStateInformation(const void* data, int sizeInBytes) override;
 
   OmniState state;
+  OmniEngine engine;
 
 private:
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(OmniDrumsAudioProcessor)

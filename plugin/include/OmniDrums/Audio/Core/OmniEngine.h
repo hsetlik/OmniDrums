@@ -5,6 +5,8 @@
 #include "DrumChannel.h"
 #include "juce_audio_basics/juce_audio_basics.h"
 
+typedef std::array<int, MAX_MIDI_NUM> note_channel_map;
+
 class OmniEngine {
 private:
   struct timed_midi_msg {
@@ -13,8 +15,10 @@ private:
   };
   OmniState* const state;
   SampleCache sampleCache;
+  PlayingChannelSet playingChannels;
   juce::OwnedArray<DrumChannel> drumChannels;
   std::queue<timed_midi_msg> midiQueue;
+  note_channel_map noteMap;
 
 public:
   OmniEngine(OmniState* s);
@@ -23,4 +27,5 @@ public:
 private:
   void prepareForBlock();
   void loadMidiMessages(juce::MidiBuffer& midiBuf, int bufLength);
+  void handleMidiMessage(const juce::MidiMessage& msg);
 };

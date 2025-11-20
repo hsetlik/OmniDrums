@@ -103,6 +103,11 @@ static apvts::ParameterLayout getParamLayout() {
 }
 
 //===================================================
+
 OmniState::OmniState(juce::AudioProcessor& proc)
     : audioState(proc, nullptr, ID::OmniDrums_audioState, getParamLayout()),
       samplesState(defaultSampleState()) {}
+
+float OmniState::loadAudioParameter(const String& paramID) const {
+  return audioState.getRawParameterValue(paramID)->load();
+}
