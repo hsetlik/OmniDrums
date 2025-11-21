@@ -32,11 +32,14 @@ class SampleNameComponent : public Component, public ValueTree::Listener {
 private:
   OmniState* const state;
   const int channelIdx;
+  String getLabelText() const;
 
 public:
   SampleNameComponent(OmniState* s, int idx);
+  ~SampleNameComponent() override;
   void paint(juce::Graphics& g) override;
 };
+
 //============================================================
 class OmniChannelComponent : public Component {
 private:

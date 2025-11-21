@@ -1,5 +1,6 @@
 #include "OmniDrums/GUI/SampleView/ChannelComponent.h"
 #include "OmniDrums/GUI/Shared/Color.h"
+#include "OmniDrums/GUI/Shared/Fonts.h"
 #include "OmniDrums/GUI/Shared/Images.h"
 #include "OmniDrums/Identifiers.h"
 
@@ -88,3 +89,47 @@ void DrumPadComponent::mouseUp(const juce::MouseEvent& e) {
 }
 
 //===================================================
+
+SampleNameComponent::SampleNameComponent(OmniState* s, int idx)
+    : state(s), channelIdx(idx) {
+  state->samplesState.addListener(this);
+}
+
+SampleNameComponent::~SampleNameComponent() {
+  state->samplesState.removeListener(this);
+}
+
+String SampleNameComponent::getLabelText() const {
+  auto sampleTree = state->samplesState.getChildWithProperty(
+      ID::sampleDrumChannel, channelIdx);
+  if (!sampleTree.isValid()) {
+    return "Empty";
+  }
+  int categIdx = sampleTree[ID::sampleDrumCategory];
+  String name = sampleTree[ID::sampleFileName];
+  return drumCategoryNames[categIdx] + " | " + name;
+}
+
+void SampleNameComponent::paint(juce::Graphics& g) {
+  auto fBounds = getLocalBounds().toFloat();
+  static const float cornerRadius = 4.0f;
+  g.setColour(UIColor::shadowGray);
+  g.fillRoundedRectangle(fBounds, cornerRadius);
+  fBounds = fBounds.reduced(1.5f);
+  g.setColour(UIColor::bkgndGray);
+  g.fillRoundedRectangle(fBounds, cornerRadius);
+  fBounds.removeFromLeft(fBounds.getHeight() * 0.5f);
+  AttString aStr(getLabelText());
+  aStr.setFont(Fonts::getFont(Fonts::RobotoLightItalic)
+                   .withHeight(fBounds.getHeight() * 0.65f));
+  aStr.setJustification(juce::Justification::centredLeft);
+  aStr.setColour(UIColor::borderGray);
+  aStr.draw(g, fBounds);
+}
+
+//============================================================
+
+OmniChannelComponent::OmniChannelComponent(OmniState* s, int chanIdx)
+    : state(s), channelIdx(chanIdx), drumPad(state, chanIdx) {
+  addAndMakeVisible(drumPad);
+}
