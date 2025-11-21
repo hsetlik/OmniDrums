@@ -45,14 +45,16 @@ class OmniChannelComponent : public Component {
 private:
   OmniState* const state;
   const int channelIdx;
-  slider_attach_ptr gainAttach;
   juce::Slider gainSlider;
-  slider_attach_ptr panAttach;
+  slider_attach_ptr gainAttach;
   juce::Slider panSlider;
+  slider_attach_ptr panAttach;
   DrumPadComponent drumPad;
+  SampleNameComponent nameComp;
 
 public:
   OmniChannelComponent(OmniState* s, int chanIdx);
+
   // basic component stuff
   void resized() override;
   void paint(juce::Graphics& g) override;

@@ -2,6 +2,7 @@
 #include "OmniDrums/GUI/Shared/Color.h"
 #include "OmniDrums/GUI/Shared/Fonts.h"
 #include "OmniDrums/GUI/Shared/Images.h"
+#include "OmniDrums/GUI/Shared/Util.h"
 #include "OmniDrums/Identifiers.h"
 
 DrumPadComponent::DrumPadComponent(OmniState* s, int idx)
@@ -130,6 +131,67 @@ void SampleNameComponent::paint(juce::Graphics& g) {
 //============================================================
 
 OmniChannelComponent::OmniChannelComponent(OmniState* s, int chanIdx)
-    : state(s), channelIdx(chanIdx), drumPad(state, chanIdx) {
+    : state(s), channelIdx(chanIdx), drumPad(s, chanIdx), nameComp(s, chanIdx) {
+  // set up sliders
+  gainSlider.setSliderStyle(juce::Slider::Rotary);
+  gainSlider.setTextBoxStyle(juce::Slider::NoTextBox, true, 0, 0);
+  const String gainID = ID::channelGain.toString() + String(channelIdx);
+  gainAttach.reset(
+      new apvts::SliderAttachment(state->audioState, gainID, gainSlider));
+  addAndMakeVisible(gainSlider);
+
+  panSlider.setSliderStyle(juce::Slider::Rotary);
+  panSlider.setTextBoxStyle(juce::Slider::NoTextBox, true, 0, 0);
+  const String panID = ID::channelPan.toString() + String(channelIdx);
+  panAttach.reset(
+      new apvts::SliderAttachment(state->audioState, panID, panSlider));
+  addAndMakeVisible(panSlider);
+
   addAndMakeVisible(drumPad);
+
+  addAndMakeVisible(nameComp);
+}
+
+void OmniChannelComponent::resized() {
+  auto fBounds = getLocalBounds().toFloat();
+  const float yScale = fBounds.getHeight() / 210.0f;
+  const float xScale = fBounds.getWidth() / 270.0f;
+  // as laid out in ChannelComponent.ai
+  frect_t nameBounds = {4.0f, 8.0f, 170.0f, 18.0f};
+  frect_t padBounds = {4.0f, 30.0f, 170.0f, 170.0f};
+  frect_t gainBounds = {191.0f, 68.0f, 35.0f, 35.0f};
+  frect_t panBounds = {190.0f, 157.0f, 35.0f, 35.0f};
+
+  nameComp.setBounds(
+      GraphicsUtil::scaledFor(nameBounds, xScale, yScale).toNearestInt());
+  drumPad.setBounds(
+      GraphicsUtil::scaledFor(padBounds, xScale, yScale).toNearestInt());
+  gainSlider.setBounds(
+      GraphicsUtil::scaledFor(gainBounds, xScale, yScale).toNearestInt());
+  panSlider.setBounds(
+      GraphicsUtil::scaledFor(panBounds, xScale, yScale).toNearestInt());
+}
+
+static AttString getParamAttString(const String& text) {
+  AttString aStr(text);
+  aStr.setFont(Fonts::getFont(Fonts::RobotoLightItalic).withHeight(14.0f));
+  aStr.setColour(UIColor::offWhite);
+  aStr.setJustification(juce::Justification::centred);
+  return aStr;
+}
+
+void OmniChannelComponent::paint(juce::Graphics& g) {
+  auto fBounds = getLocalBounds().toFloat();
+  const float yScale = fBounds.getHeight() / 210.0f;
+  const float xScale = fBounds.getWidth() / 270.0f;
+  g.setColour(UIColor::shadowGray);
+  g.fillRect(fBounds);
+
+  frect_t gainBounds = {194.0f * xScale, 44.0f * yScale, 28.0f, 16.0f};
+  frect_t panBounds = {195.0f * xScale, 134.0f * yScale, 23.0f, 16.0f};
+
+  static AttString gainAttStr = getParamAttString("Gain");
+  static AttString panAttStr = getParamAttString("Pan");
+  gainAttStr.draw(g, gainBounds);
+  panAttStr.draw(g, panBounds);
 }

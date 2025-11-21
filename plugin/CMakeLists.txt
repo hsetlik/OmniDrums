@@ -38,6 +38,7 @@ set(ASSET_FILES
 "${ASSETS_DIR}/GradBar_6x1800.png"
 "${ASSETS_DIR}/KnobBkgnd_35x35.png"
 "${ASSETS_DIR}/KnobTop_24x24.png"
+"${ASSETS_DIR}/KnobTop_72x72.png"
 "${ASSETS_DIR}/VertThumbOff_28x42.png"
 "${ASSETS_DIR}/VertThumbOn_28x42.png"
 "${ASSETS_DIR}/DrumIconBkgnd_60x62.png"
@@ -139,6 +140,7 @@ target_sources(${PROJECT_NAME}
 				source/SamplePlayer.cpp
 				${INCLUDE_DIR}/Audio/SamplePlayer.h
 				source/ChannelComponent.cpp
+				source/SampleView.cpp
 				${INCLUDE_DIR}/GUI/SampleView/ChannelComponent.h
 				source/DrumChannel.cpp
 				${INCLUDE_DIR}/Audio/Core/DrumChannel.h
@@ -146,6 +148,9 @@ target_sources(${PROJECT_NAME}
 				${INCLUDE_DIR}/Audio/Core/SampleCache.h
 				source/OmniEngine.cpp
 				${INCLUDE_DIR}/Audio/Core/OmniEngine.h
+				source/Util.cpp
+				${INCLUDE_DIR}/GUI/Shared/Util.h
+				${INCLUDE_DIR}/GUI/SampleView/SampleView.h
         ${INCLUDE_DIR}/PluginProcessor.h
 )
 

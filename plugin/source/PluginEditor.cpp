@@ -8,9 +8,9 @@ OmniDrumsProcessorEditor::OmniDrumsProcessorEditor(OmniDrumsAudioProcessor& p)
   juce::ignoreUnused(processorRef);
   // Make sure that before the constructor has finished, you've set the
   // editor's size to whatever you need it to be.
-  setSize(1800, 1080);
-  // setScaleFactor(1.2f);
-  //  setResizable(true, true);
+  setSize(1800 / 2, 1080 / 2);
+  setResizable(true, true);
+  setResizeLimits(1800 / 4, 1080 / 4, 1800, 1080);
   addAndMakeVisible(editor);
 }
 

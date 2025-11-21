@@ -69,11 +69,9 @@ void OmniEngine::renderBlock(juce::AudioBuffer<float>& buffer,
     float rComp = 0.0f;
     // before touching the channels, check if it's time to handle the next
     // MIDI message
-    if (!midiQueue.empty()) {
-      while (midiQueue.front().sampleIdx == s) {
-        handleMidiMessage(midiQueue.front().message);
-        midiQueue.pop();
-      }
+    while (!midiQueue.empty() && midiQueue.front().sampleIdx == s) {
+      handleMidiMessage(midiQueue.front().message);
+      midiQueue.pop();
     }
     for (int c = 0; c < playingChannels.numPlayingChannels(); ++c) {
       auto chanIdx = playingChannels[c];

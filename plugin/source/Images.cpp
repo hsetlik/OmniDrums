@@ -11,7 +11,7 @@ juce::Image getImage(const AssetE& id) {
   static juce::Image iKnobBkgnd = juce::ImageFileFormat::loadFrom(
       AssetData::KnobBkgnd_35x35_png, AssetData::KnobBkgnd_35x35_pngSize);
   static juce::Image iKnobTop = juce::ImageFileFormat::loadFrom(
-      AssetData::KnobTop_24x24_png, AssetData::KnobTop_24x24_pngSize);
+      AssetData::KnobTop_72x72_png, AssetData::KnobTop_72x72_pngSize);
   static juce::Image iVertThumbOff = juce::ImageFileFormat::loadFrom(
       AssetData::VertThumbOff_28x42_png, AssetData::VertThumbOff_28x42_pngSize);
   static juce::Image iVertThumbOn = juce::ImageFileFormat::loadFrom(

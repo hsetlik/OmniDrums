@@ -1,6 +1,7 @@
 #include "OmniDrums/GUI/Shared/OmniLookAndFeel.h"
 #include "OmniDrums/GUI/Shared/Color.h"
 #include "OmniDrums/GUI/Shared/Images.h"
+#include "juce_graphics/juce_graphics.h"
 constexpr float ThumbAspectRatio = 1.0f / 3.0f;
 constexpr float KnobTopAspectRatio = 24.0f / 35.0f;
 //===================================================
@@ -181,23 +182,28 @@ void OmniLookAndFeel::drawRotarySlider(juce::Graphics& g,
       width = height;
   }
   irect_t iBounds(x, y, width, height);
-  auto bounds = iBounds.toFloat().reduced(10.0f);
+  auto sideLength = std::min(width, height);
+  iBounds = iBounds.withSizeKeepingCentre(sideLength, sideLength);
+  auto bounds = iBounds.toFloat();
   // 1. draw the background image
   auto bkgndImg = Assets::getImage(Assets::KnobBkgnd);
   g.drawImage(bkgndImg, bounds);
   // 2. find the bounds for the knob top
-  const float inset =
-      ((float)width - ((float)width * KnobTopAspectRatio)) / 2.0f;
-  auto topBounds = bounds.reduced(inset);
+  auto topBounds =
+      bounds.withSizeKeepingCentre(bounds.getWidth() * KnobTopAspectRatio,
+                                   bounds.getHeight() * KnobTopAspectRatio);
+  // g.setColour(juce::Colours::chartreuse);
+  // g.fillRect(topBounds);
   // angle and draw the knob top
-  const float scale = topBounds.getWidth() / 24.0f;
+  // const float scale = topBounds.getWidth() / 25.0f;
+  auto topImg = Assets::getImage(Assets::KnobTop);
   auto endAngle =
       flerp(rotaryStartAngle, rotaryEndAngle, sliderPosProportional);
-  auto transform =
-      juce::AffineTransform::rotation(endAngle, bounds.getCentreX(),
-                                      bounds.getCentreY())
-          .followedBy(juce::AffineTransform::scale(
-              scale, scale, bounds.getCentreX(), bounds.getCentreY()));
-  auto topImg = Assets::getImage(Assets::KnobTop);
-  g.drawImageTransformed(topImg, transform);
+  auto transform = juce::AffineTransform::rotation(
+      endAngle, topBounds.getCentreX(), topBounds.getCentreY());
+  // .followedBy(juce::AffineTransform::scale(
+  //     scale, scale, topBounds.getCentreX(), topBounds.getCentreY()));
+  // auto topImg = Assets::getImage(Assets::KnobTop);
+  g.addTransform(transform);
+  g.drawImage(topImg, topBounds);
 }

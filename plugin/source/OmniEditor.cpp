@@ -3,9 +3,11 @@
 #include "OmniDrums/GUI/Shared/Color.h"
 #include "OmniDrums/GUI/Shared/Fonts.h"
 #include "OmniDrums/GUI/Shared/Images.h"
+#include "OmniDrums/GUI/Shared/Util.h"
 
-OmniEditor::OmniEditor(OmniState* s) : state(s) {
+OmniEditor::OmniEditor(OmniState* s) : state(s), sampleView(s) {
   setLookAndFeel(&lnf);
+  addAndMakeVisible(sampleView);
 }
 
 OmniEditor::~OmniEditor() {
@@ -45,4 +47,14 @@ void OmniEditor::paint(juce::Graphics& g) {
   // draw the gradient border thing
   auto gradBounds = fBounds.removeFromTop(6.0f);
   g.drawImage(Assets::getImage(Assets::GradBar), gradBounds);
+}
+
+void OmniEditor::resized() {
+  auto fBounds = getLocalBounds().toFloat();
+  const float yScale = fBounds.getHeight() / 1080.0f;
+  const float xScale = fBounds.getWidth() / 1800.0f;
+  fBounds.removeFromTop(97.0f * yScale);
+  fBounds.removeFromLeft(24.0f * xScale);
+  frect_t sampleViewBounds = fBounds.removeFromTop(630.0f * yScale);
+  sampleView.setBounds(sampleViewBounds.toNearestInt());
 }
