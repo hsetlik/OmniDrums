@@ -265,14 +265,38 @@ OmniSampleLibrary::OmniSampleLibrary()
     : libFolder(getSampleLibFolder()),
       sampleLibState(loadFromXmlFile(getLibraryDataFile())) {
   jassert(libFolder.exists() && libFolder.isDirectory());
-  // TODO: should go through the file system load info abt
-  // everything here
+  recordNewSamples();
 }
 
 OmniSampleLibrary::~OmniSampleLibrary() {
   auto xmlStr = sampleLibState.toXmlString();
   auto file = getLibraryDataFile();
   jassert(file.replaceWithText(xmlStr));
+}
+
+bool OmniSampleLibrary::recordedInLibState(int drumCateg,
+                                           const String& fileName) const {
+  for (int c = 0; c < sampleLibState.getNumChildren(); ++c) {
+    auto child = sampleLibState.getChild(c);
+    const int childCateg = child[ID::sampleDrumCategory];
+    const String childName = child[ID::sampleFileName];
+    if (childCateg == drumCateg && childName == fileName)
+      return true;
+  }
+  return false;
+}
+
+void OmniSampleLibrary::recordNewSamples() {
+  for (int c = 0; c < NUM_DRUM_CATEGORIES; ++c) {
+    auto folder = getSampleLibFolder().getChildFile(drumCategoryNames[c]);
+    auto files = folder.findChildFiles(juce::File::findFiles, true);
+    for (int f = 0; f < files.size(); ++f) {
+      auto name = files[f].getFileName();
+      if (!recordedInLibState(c, name)) {
+        sampleLibState.appendChild(buildLibChildTree(c, name), nullptr);
+      }
+    }
+  }
 }
 
 juce::File OmniSampleLibrary::fileForSample(

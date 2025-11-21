@@ -16,6 +16,8 @@ class OmniSampleLibrary {
 private:
   juce::File libFolder;
   ValueTree sampleLibState;
+  bool recordedInLibState(int drumCateg, const String& fileName) const;
+  void recordNewSamples();
   static ValueTree buildDefaultLibrary();
 
 public:
