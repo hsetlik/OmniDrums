@@ -12,6 +12,7 @@ OmniEditor::OmniEditor(OmniState* s) : state(s), sampleView(s) {
 
 OmniEditor::~OmniEditor() {
   setLookAndFeel(nullptr);
+  Icons::cleanupImages();
 }
 
 void OmniEditor::paint(juce::Graphics& g) {

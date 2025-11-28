@@ -38,6 +38,7 @@ enum IconE {
   LibOpen,
   LibClosed
 };
-juce::Image getImage(const IconE& id);
-juce::Image getDrumIconWithColor(const DrumCategE& id, const Color& color);
+juce::Image& getImage(const IconE& id);
+juce::Image& getDrumIconWithColor(const DrumCategE& id, const Color& color);
+void cleanupImages();
 }  // namespace Icons

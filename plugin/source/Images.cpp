@@ -69,7 +69,7 @@ juce::Image getImage(const AssetE& id) {
 }  // namespace Assets
 
 namespace Icons {
-juce::Image getImage(const IconE& id) {
+juce::Image& getImage(const IconE& id) {
   static juce::Image iKick = juce::ImageFileFormat::loadFrom(
       IconData::Kick_256_png, IconData::Kick_256_pngSize);
   static juce::Image iSnare = juce::ImageFileFormat::loadFrom(
@@ -134,7 +134,7 @@ juce::Image getImage(const IconE& id) {
   }
 }
 
-static juce::Image imgForDrumCateg(const DrumCategE& id) {
+static juce::Image& imgForDrumCateg(const DrumCategE& id) {
   switch (id) {
     case kick:
       return getImage(IconE::Kick);
@@ -177,9 +177,34 @@ static juce::Image getCopyWithOpaqueColor(juce::Image& img,
   return destImg;
 }
 
-juce::Image getDrumIconWithColor(const DrumCategE& id, const Color& color) {
-  auto img = imgForDrumCateg(id);
-  return getCopyWithOpaqueColor(img, color);
+// generates a 32 bit ID from an RGB color and an icon ID
+static uint32_t getDrumIconID(const DrumCategE& categ, const Color& color) {
+  uint32_t id = 0x0000;
+  uint32_t rMask = (uint32_t)color.getRed();
+  uint32_t gMask = (uint32_t)color.getGreen();
+  uint32_t bMask = (uint32_t)color.getBlue();
+  // bitwise or with each mask shifted appropriately
+  id = id | (rMask << 8);
+  id = id | (gMask << 16);
+  id = id | (bMask << 24);
+  return id | ((uint32_t)categ);
+}
+
+// hash map to hold our images
+static std::unordered_map<uint32_t, juce::Image> drumIconMap = {};
+
+//
+juce::Image& getDrumIconWithColor(const DrumCategE& id, const Color& color) {
+  auto iconHash = getDrumIconID(id, color);
+  if (!drumIconMap.contains(iconHash)) {
+    auto blackImg = imgForDrumCateg(id);
+    drumIconMap[iconHash] = getCopyWithOpaqueColor(blackImg, color);
+  }
+  return drumIconMap[iconHash];
+}
+
+void cleanupImages() {
+  drumIconMap.clear();
 }
 
 }  // namespace Icons
