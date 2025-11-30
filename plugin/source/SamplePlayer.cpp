@@ -164,5 +164,8 @@ SamplePlayer::~SamplePlayer() {
 }
 
 void SamplePlayer::sampleRateSet(double newRate) {
-  buf.reset(new SamplePlaybackBuffer(parentManager, sampleFile, newRate));
+  if (std::abs(newRate - prevSampleRate) > 1.0) {
+    buf.reset(new SamplePlaybackBuffer(parentManager, sampleFile, newRate));
+    prevSampleRate = newRate;
+  }
 }

@@ -48,6 +48,7 @@ private:
 class SamplePlayer : public SampleRateListener {
 private:
   juce::AudioFormatManager* const parentManager;
+  double prevSampleRate = 44100.0;
   juce::File sampleFile;
   std::unique_ptr<SamplePlaybackBuffer> buf;
 
