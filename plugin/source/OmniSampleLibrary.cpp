@@ -4,6 +4,7 @@
 #include "OmniDrums/Identifiers.h"
 #include "juce_audio_formats/juce_audio_formats.h"
 #include "juce_core/juce_core.h"
+#include "juce_core/system/juce_PlatformDefs.h"
 namespace FactorySamples {
 static void writeBinaryToFile(const SampleE& id, juce::File& dest) {
   switch (id) {
@@ -211,7 +212,6 @@ juce::File OmniSampleLibrary::getSampleLibFolder() {
 
 static ValueTree buildLibChildTree(int categID, const String& fileName) {
   ValueTree vt(ID::SAMPLE_LIB_ENTRY);
-  vt.setProperty(ID::sampleDrumCategory, categID, nullptr);
   vt.setProperty(ID::sampleFileName, fileName, nullptr);
   auto now = juce::Time::getCurrentTime();
   vt.setProperty(ID::libSampleDateAdded, now.toISO8601(true), nullptr);
@@ -229,13 +229,19 @@ static ValueTree buildLibChildTree(int categID, const String& fileName) {
 ValueTree OmniSampleLibrary::buildDefaultLibrary() {
   ValueTree vt(ID::OMNI_SAMPLE_LIB);
   for (int i = 0; i < NUM_DRUM_CATEGORIES; ++i) {
+    ValueTree categTree(ID::SAMPLE_LIB_CATEGORY);
+    categTree.setProperty(ID::sampleCategoryIndex, i, nullptr);
+    categTree.setProperty(ID::sampleCategoryName, drumCategoryNames[i],
+                          nullptr);
     auto folder = getSampleLibFolder().getChildFile(drumCategoryNames[i]);
     auto files = folder.findChildFiles(juce::File::findFiles, true);
+
     for (int f = 0; f < files.size(); ++f) {
       auto name = files[f].getRelativePathFrom(folder);
       auto childTree = buildLibChildTree(i, name);
-      vt.appendChild(childTree, nullptr);
+      categTree.appendChild(childTree, nullptr);
     }
+    vt.appendChild(categTree, nullptr);
   }
   return vt;
 }
@@ -276,24 +282,27 @@ OmniSampleLibrary::~OmniSampleLibrary() {
 
 bool OmniSampleLibrary::recordedInLibState(int drumCateg,
                                            const String& fileName) const {
-  for (int c = 0; c < sampleLibState.getNumChildren(); ++c) {
-    auto child = sampleLibState.getChild(c);
-    const int childCateg = child[ID::sampleDrumCategory];
-    const String childName = child[ID::sampleFileName];
-    if (childCateg == drumCateg && childName == fileName)
-      return true;
+  auto categTree = sampleLibState.getChild(drumCateg);
+  if (!categTree.isValid() || !categTree.hasType(ID::SAMPLE_LIB_CATEGORY)) {
+    jassert(false);
+    return false;
   }
-  return false;
+  auto sampleTree =
+      categTree.getChildWithProperty(ID::sampleFileName, fileName);
+  return sampleTree.isValid();
 }
 
 void OmniSampleLibrary::recordNewSamples() {
   for (int c = 0; c < NUM_DRUM_CATEGORIES; ++c) {
     auto folder = getSampleLibFolder().getChildFile(drumCategoryNames[c]);
     auto files = folder.findChildFiles(juce::File::findFiles, true);
-    for (int f = 0; f < files.size(); ++f) {
-      auto name = files[f].getFileName();
-      if (!recordedInLibState(c, name)) {
-        sampleLibState.appendChild(buildLibChildTree(c, name), nullptr);
+    auto categTree = sampleLibState.getChild(c);
+    if (files.size() != categTree.getNumChildren()) {
+      for (int f = 0; f < files.size(); ++f) {
+        auto name = files[f].getFileName();
+        if (!recordedInLibState(c, name)) {
+          sampleLibState.appendChild(buildLibChildTree(c, name), nullptr);
+        }
       }
     }
   }

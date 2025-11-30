@@ -99,6 +99,10 @@ DECLARE_ID(
 
 // top level ID for our system-wide sample library file
 DECLARE_ID(OMNI_SAMPLE_LIB)
+// 2nd layer type for each category folder
+DECLARE_ID(SAMPLE_LIB_CATEGORY)
+DECLARE_ID(sampleCategoryIndex)
+DECLARE_ID(sampleCategoryName)
 // type for the child trees
 DECLARE_ID(SAMPLE_LIB_ENTRY)
 
