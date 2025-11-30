@@ -1,6 +1,7 @@
 #pragma once
 #include "OmniDrums/Audio/SamplePlayer.h"
 #include <cmath>
+#include "juce_audio_basics/juce_audio_basics.h"
 #include "juce_audio_formats/juce_audio_formats.h"
 #include "juce_core/juce_core.h"
 
@@ -75,28 +76,18 @@ static float monoAtRelativePos(const juce::AudioBuffer<float>& buf, float pos) {
   return monoAtRelativePos_mono(buf, pos);
 }
 
-// SamplePlaybackBuffer::SamplePlaybackBuffer(const juce::File& sample,
-//                                            double sampleRate)
-//     : playbackSampleRate(sampleRate),
-//       lengthInSamples(AudioFile::samplesNeededFor(sample, sampleRate)),
-//       buffer(new float[lengthInSamples]) {
-//   auto reader = juce::rawToUniquePtr(AudioFile::getReaderFor(sample));
-//   jassert(reader != nullptr);
-//   // 1. load the file into an AudioBuffer (this handles sample type
-//   conversion
-//   // for us)
-//   juce::AudioBuffer<float> fileBuf((int)reader->numChannels,
-//                                    (int)reader->lengthInSamples);
-//   jassert(
-//       reader->read(&fileBuf, 0, (int)reader->lengthInSamples, 0, true,
-//       true));
-//
-//   // 2. scale/convert as needed and write into the buffer
-//   for (size_t s = 0; s < lengthInSamples; ++s) {
-//     const float pos = (float)s / (float)lengthInSamples;
-//     buffer[s] = monoAtRelativePos(fileBuf, pos);
-//   }
-// }
+static std::array<float, FADE_OUT_SAMPLES> createGainRamp() {
+  std::array<float, FADE_OUT_SAMPLES> arr;
+  float gain = 1.0f;
+  const float dGain = gain / (float)FADE_OUT_SAMPLES;
+  for (size_t i = 0; i < FADE_OUT_SAMPLES; ++i) {
+    arr[i] = gain;
+    gain -= dGain;
+  }
+  return arr;
+}
+
+static std::array<float, FADE_OUT_SAMPLES> gainRamp = createGainRamp();
 
 SamplePlaybackBuffer::SamplePlaybackBuffer(juce::AudioFormatManager* manager,
                                            const juce::File& sample,
@@ -109,15 +100,30 @@ SamplePlaybackBuffer::SamplePlaybackBuffer(juce::AudioFormatManager* manager,
   // 1. load the file into an AudioBuffer (this handles sample type conversion
   // for us)
   juce::AudioBuffer<float> fileBuf((int)reader->numChannels,
-                                   (int)reader->lengthInSamples);
+                                   (int)reader->lengthInSamples + 4);
   jassert(reader->read(&fileBuf, 0, (int)reader->lengthInSamples + 4, 0, true,
                        true));
 
   // 2. scale/convert as needed and write into the buffer
+  const size_t fadeOutStart = lengthInSamples - FADE_OUT_SAMPLES;
+  float sampleSum = 0.0f;
   for (size_t s = 0; s < lengthInSamples; ++s) {
     const float pos = (float)s / (float)lengthInSamples;
     buffer[s] = monoAtRelativePos(fileBuf, pos);
+    if (s >= fadeOutStart) {
+      buffer[s] *= gainRamp[s - fadeOutStart];
+    }
+    sampleSum += buffer[s];
   }
+#ifdef REMOVE_DC_BIAS
+  const float bias = sampleSum / (float)lengthInSamples;
+  const float minBias = (float)juce::Decibels::decibelsToGain(-60.0f);
+  if (std::fabs(bias) >= minBias) {
+    for (size_t s = 0; s < lengthInSamples; ++s) {
+      buffer[s] -= bias;
+    }
+  }
+#endif
 }
 
 //===================================================

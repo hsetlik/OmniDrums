@@ -3,6 +3,7 @@
 #include "juce_audio_basics/juce_audio_basics.h"
 //===================================================
 
+static frange_t panRange = rangeWithCenter(PAN_MIN, PAN_MAX, PAN_DEFAULT);
 OmniEngine::OmniEngine(OmniState* s) : state(s), sampleCache(s) {
   for (int i = 0; i < NUM_DRUM_CHANNELS; ++i) {
     drumChannels.add(new DrumChannel(i, &playingChannels));
@@ -28,23 +29,12 @@ void OmniEngine::prepareForBlock() {
       noteMap[(size_t)fMidiNote] = i;
       drumChannels[i]->audioState.gainLinear =
           juce::Decibels::decibelsToGain(gainDb);
-      drumChannels[i]->audioState.pan = panVal;
+      drumChannels[i]->audioState.pan = panRange.convertTo0to1(panVal);
       drumChannels[i]->audioState.compressorMix = mixVal;
     }
   }
 }
 
-void OmniEngine::loadMidiMessages(juce::MidiBuffer& midi, int maxSample) {
-  state->kbdState.processNextMidiBuffer(midi, 0, maxSample, true);
-  for (auto it = midi.begin(); it != midi.end(); ++it) {
-    auto metadata = *it;
-    timed_midi_msg m;
-    m.sampleIdx = metadata.samplePosition;
-    jassert(m.sampleIdx >= 0 && m.sampleIdx < maxSample);
-    m.message = metadata.getMessage();
-    midiQueue.push(m);
-  }
-}
 void OmniEngine::handleMidiMessage(const juce::MidiMessage& msg) {
   if (msg.isNoteOn()) {
     size_t noteNum = (size_t)msg.getNoteNumber();
@@ -54,35 +44,50 @@ void OmniEngine::handleMidiMessage(const juce::MidiMessage& msg) {
   }
 }
 
+void OmniEngine::renderChannels(AudioBufF& buf,
+                                int startSample,
+                                int numSamples) {
+  for (auto* chan : drumChannels) {
+    chan->renderBlock(buf, startSample, numSamples);
+  }
+}
+
 void OmniEngine::renderBlock(juce::AudioBuffer<float>& buffer,
                              juce::MidiBuffer& midiBuf) {
   // 1. update parameters
   prepareForBlock();
-  // 2. fill the MIDI queue
-  loadMidiMessages(midiBuf, buffer.getNumSamples());
-
-  // 3. iterate through the buffer
-  for (int s = 0; s < buffer.getNumSamples(); ++s) {
-    float lDry = 0.0f;
-    float rDry = 0.0f;
-    float lComp = 0.0f;
-    float rComp = 0.0f;
-    // before touching the channels, check if it's time to handle the next
-    // MIDI message
-    while (!midiQueue.empty() && midiQueue.front().sampleIdx == s) {
-      handleMidiMessage(midiQueue.front().message);
-      midiQueue.pop();
+  int startSample = 0;
+  int numSamples = buffer.getNumSamples();
+  state->kbdState.processNextMidiBuffer(midiBuf, 0, numSamples, true);
+  auto midiIterator = midiBuf.findNextSamplePosition(0);
+  bool firstEvent = true;
+  const juce::ScopedLock sl(cs);
+  for (; numSamples > 0; ++midiIterator) {
+    if (midiIterator == midiBuf.cend()) {
+      renderChannels(buffer, startSample, numSamples);
+      return;
     }
-    for (int c = 0; c < playingChannels.numPlayingChannels(); ++c) {
-      auto chanIdx = playingChannels[c];
-      drumChannels[chanIdx]->tick();
-      drumChannels[chanIdx]->renderSamplesDryMix(lDry, rDry);
-      drumChannels[chanIdx]->renderSamplesCompressorMix(lComp, rComp);
+    const auto metadata = *midiIterator;
+    const int samplesToNextMessage = metadata.samplePosition - startSample;
+    if (samplesToNextMessage >= numSamples) {
+      renderChannels(buffer, startSample, numSamples);
+      handleMidiMessage(metadata.getMessage());
+      break;
     }
-    // TODO: the compressor work happens here
-    buffer.setSample(0, s, lDry + lComp);
-    buffer.setSample(1, s, rDry + rComp);
+    auto minLength = firstEvent ? 1 : minimunBlockSize;
+    if (samplesToNextMessage < minLength) {
+      handleMidiMessage(metadata.getMessage());
+      continue;
+    }
+    firstEvent = false;
+    renderChannels(buffer, startSample, samplesToNextMessage);
+    handleMidiMessage(metadata.getMessage());
+    startSample += samplesToNextMessage;
+    numSamples -= samplesToNextMessage;
   }
-  // make sure we handled every midi event
-  jassert(midiQueue.empty());
+
+  std::for_each(midiIterator, midiBuf.cend(),
+                [&](const juce::MidiMessageMetadata& meta) {
+                  handleMidiMessage(meta.getMessage());
+                });
 }

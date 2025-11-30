@@ -1,7 +1,12 @@
 #pragma once
 #include "../OmniSampleLibrary.h"
+
 #include "juce_audio_formats/juce_audio_formats.h"
 #include "juce_events/juce_events.h"
+#define FADE_OUT_SAMPLES 300
+#define REMOVE_DC_BIAS
+
+typedef juce::AudioBuffer<float> AudioBufF;
 
 // Sample players should inherit from this to be notified of sample rate changes
 class SampleRateListener {

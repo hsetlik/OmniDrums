@@ -65,6 +65,19 @@ void DrumChannel::trigger(float velocity) {
   }
 }
 
+void DrumChannel::renderBlock(AudioBufF& buffer,
+                              int startSample,
+                              int numSamples) {
+  for (int s = 0; s < numSamples; ++s) {
+    tick();
+    float val = isPlaying ? lastOutput : 0.0f;
+    float lVal = val * audioState.pan * audioState.gainLinear;
+    float rVal = val * (1.0f - audioState.pan) * audioState.gainLinear;
+    buffer.addSample(0, startSample + s, lVal);
+    buffer.addSample(1, startSample + s, rVal);
+  }
+}
+
 void DrumChannel::renderSamplesDryMix(float& left, float& right) const {
   left += lastOutput * audioState.pan * audioState.gainLinear *
           (1.0f - audioState.compressorMix);

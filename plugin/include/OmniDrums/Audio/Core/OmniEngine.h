@@ -9,23 +9,20 @@ typedef std::array<int, MAX_MIDI_NUM> note_channel_map;
 
 class OmniEngine {
 private:
-  struct timed_midi_msg {
-    int sampleIdx;
-    juce::MidiMessage message;
-  };
   OmniState* const state;
   SampleCache sampleCache;
   PlayingChannelSet playingChannels;
   juce::OwnedArray<DrumChannel> drumChannels;
-  std::queue<timed_midi_msg> midiQueue;
   note_channel_map noteMap;
+  int minimunBlockSize = 32;
 
 public:
   OmniEngine(OmniState* s);
   void renderBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiBuf);
 
 private:
+  juce::CriticalSection cs;
   void prepareForBlock();
-  void loadMidiMessages(juce::MidiBuffer& midiBuf, int bufLength);
   void handleMidiMessage(const juce::MidiMessage& msg);
+  void renderChannels(AudioBufF& buf, int startSample, int numSamples);
 };

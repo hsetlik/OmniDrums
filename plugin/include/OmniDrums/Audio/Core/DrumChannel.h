@@ -40,7 +40,8 @@ public:
   channel_audio_state audioState;
   DrumChannel(int c, PlayingChannelSet* p);
   void tick();
-  // float getOutput() const { return lastOutput; }
+  bool playing() const { return isPlaying; }
+  void renderBlock(AudioBufF& buffer, int startSample, int numSamples);
   void renderSamplesDryMix(float& left, float& right) const;
   void renderSamplesCompressorMix(float& left, float& right) const;
   void trigger(float velocity);
