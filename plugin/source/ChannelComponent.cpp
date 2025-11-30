@@ -155,7 +155,7 @@ OmniChannelComponent::OmniChannelComponent(OmniState* s, int chanIdx)
 void OmniChannelComponent::resized() {
   auto fBounds = getLocalBounds().toFloat();
   const float yScale = fBounds.getHeight() / 210.0f;
-  const float xScale = fBounds.getWidth() / 270.0f;
+  const float xScale = fBounds.getWidth() / 296.0f;
   // as laid out in ChannelComponent.ai
   frect_t nameBounds = {4.0f, 8.0f, 170.0f, 18.0f};
   frect_t padBounds = {4.0f, 30.0f, 170.0f, 170.0f};
@@ -172,9 +172,11 @@ void OmniChannelComponent::resized() {
       GraphicsUtil::scaledFor(panBounds, xScale, yScale).toNearestInt());
 }
 
-static AttString getParamAttString(const String& text) {
+static AttString getParamAttString(const String& text, float yScale) {
   AttString aStr(text);
-  aStr.setFont(Fonts::getFont(Fonts::RobotoLightItalic).withHeight(14.0f));
+  aStr.setWordWrap(AttString::none);
+  aStr.setFont(
+      Fonts::getFont(Fonts::RobotoLightItalic).withPointHeight(14.0f * yScale));
   aStr.setColour(UIColor::offWhite);
   aStr.setJustification(juce::Justification::centred);
   return aStr;
@@ -183,15 +185,17 @@ static AttString getParamAttString(const String& text) {
 void OmniChannelComponent::paint(juce::Graphics& g) {
   auto fBounds = getLocalBounds().toFloat();
   const float yScale = fBounds.getHeight() / 210.0f;
-  const float xScale = fBounds.getWidth() / 270.0f;
+  const float xScale = fBounds.getWidth() / 296.0f;
   g.setColour(UIColor::shadowGray);
   g.fillRect(fBounds);
 
-  frect_t gainBounds = {194.0f * xScale, 44.0f * yScale, 28.0f, 16.0f};
-  frect_t panBounds = {195.0f * xScale, 134.0f * yScale, 23.0f, 16.0f};
+  frect_t gainBounds = {194.0f * xScale, 44.0f * yScale, 28.0f * xScale,
+                        16.0f * yScale};
+  frect_t panBounds = {195.0f * xScale, 134.0f * yScale, 23.0f * xScale,
+                       16.0f * yScale};
 
-  static AttString gainAttStr = getParamAttString("Gain");
-  static AttString panAttStr = getParamAttString("Pan");
+  static AttString gainAttStr = getParamAttString("Gain", yScale);
+  static AttString panAttStr = getParamAttString("Pan", yScale);
   gainAttStr.draw(g, gainBounds);
   panAttStr.draw(g, panBounds);
 }

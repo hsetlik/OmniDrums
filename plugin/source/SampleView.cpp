@@ -13,14 +13,12 @@ ViewedChannelsComponent::ViewedChannelsComponent(OmniState* s) {
 
 void ViewedChannelsComponent::resized() {
   auto editorParent = findParentComponentOfClass<SampleView>();
-  // jassert(editorParent != nullptr);
-  auto parentBounds = (editorParent == nullptr)
-                          ? frect_t(0.0f, 0.0f, 1776.0f, 210.0f * 3.0f)
-                          : editorParent->getBounds().toFloat();
+  jassert(editorParent != nullptr);
+  auto parentBounds = editorParent->getBounds().toFloat();
   const float xScale = parentBounds.getWidth() / 1776.0f;
   const float yScale = parentBounds.getHeight() / 630.0f;
   static const float chanHeight = 210.0f;
-  static const float chanWidth = 270.0f;
+  static const float chanWidth = 296.0f;
   static const int colHeight = 3;
   int numCols = 0;
   for (int c = 0; c < channels.size(); ++c) {
@@ -44,6 +42,7 @@ SampleView::SampleView(OmniState* s) : channelComp(s) {
   vpt.setViewedComponent(&channelComp, false);
   vpt.setViewPosition(0, 0);
   vpt.setInterceptsMouseClicks(true, true);
+  vpt.setScrollBarsShown(false, true, false, false);
   addAndMakeVisible(vpt);
   channelComp.resized();
 }
@@ -52,4 +51,3 @@ void SampleView::resized() {
   channelComp.resized();
   vpt.setBounds(getLocalBounds());
 }
-

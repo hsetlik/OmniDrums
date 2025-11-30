@@ -54,7 +54,7 @@ void OmniEditor::resized() {
   auto fBounds = getLocalBounds().toFloat();
   const float yScale = fBounds.getHeight() / 1080.0f;
   const float xScale = fBounds.getWidth() / 1800.0f;
-  fBounds.removeFromTop(97.0f * yScale);
+  fBounds.removeFromTop(103.0f * yScale);
   fBounds.removeFromLeft(24.0f * xScale);
   frect_t sampleViewBounds = fBounds.removeFromTop(630.0f * yScale);
   sampleView.setBounds(sampleViewBounds.toNearestInt());
