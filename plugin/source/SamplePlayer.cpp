@@ -9,17 +9,6 @@ namespace AudioFile {
 static double currentSampleRate = 44100.0f;
 static std::vector<SampleRateListener*> listeners = {};
 
-// size_t samplesNeededFor(const juce::File& sample, double playbackSampleRate)
-// {
-//   juce::AudioFormatManager manager;
-//   manager.registerBasicFormats();
-//   auto reader = juce::rawToUniquePtr(manager.createReaderFor(sample));
-//   jassert(reader != nullptr);
-//   const double fileDurationSeconds =
-//       (double)reader->lengthInSamples / reader->sampleRate;
-//   return (size_t)(fileDurationSeconds * playbackSampleRate);
-// }
-//
 size_t samplesNeededFor(juce::AudioFormatManager* manager,
                         const juce::File& sample,
                         double playbackSampleRate) {
@@ -28,12 +17,6 @@ size_t samplesNeededFor(juce::AudioFormatManager* manager,
   const double fileDurationSeconds =
       (double)reader->lengthInSamples / reader->sampleRate;
   return (size_t)(fileDurationSeconds * playbackSampleRate);
-}
-
-juce::AudioFormatReader* getReaderFor(const juce::File& sample) {
-  juce::AudioFormatManager manager;
-  manager.registerBasicFormats();
-  return manager.createReaderFor(sample);
 }
 
 double getCurrentSampleRate() {
@@ -127,8 +110,8 @@ SamplePlaybackBuffer::SamplePlaybackBuffer(juce::AudioFormatManager* manager,
   // for us)
   juce::AudioBuffer<float> fileBuf((int)reader->numChannels,
                                    (int)reader->lengthInSamples);
-  jassert(
-      reader->read(&fileBuf, 0, (int)reader->lengthInSamples, 0, true, true));
+  jassert(reader->read(&fileBuf, 0, (int)reader->lengthInSamples + 4, 0, true,
+                       true));
 
   // 2. scale/convert as needed and write into the buffer
   for (size_t s = 0; s < lengthInSamples; ++s) {
@@ -139,15 +122,6 @@ SamplePlaybackBuffer::SamplePlaybackBuffer(juce::AudioFormatManager* manager,
 
 //===================================================
 //
-// SamplePlayer::SamplePlayer(const juce::File& sample)
-//     : sampleFile(sample),
-//       buf(std::make_unique<SamplePlaybackBuffer>(
-//           sampleFile,
-//           AudioFile::getCurrentSampleRate())) {
-//   AudioFile::registerListener(this);
-// }
-//
-
 SamplePlayer::SamplePlayer(juce::AudioFormatManager* manager,
                            const juce::File& sample)
     : parentManager(manager),

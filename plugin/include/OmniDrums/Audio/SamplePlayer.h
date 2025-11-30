@@ -14,14 +14,12 @@ public:
 // deals with parsing and converting audio files
 // of various file formats, sample rates, channel layouts, etc
 namespace AudioFile {
-// size_t samplesNeededFor(const juce::File& sample, double playbackSampleRate);
 size_t samplesNeededFor(juce::AudioFormatManager* manager,
                         const juce::File& sample,
                         double playbackSampleRate);
 double getCurrentSampleRate();
 // call this from PluginProcessor.cpp any time the host sets the sample rate
 void setSampleRate(double newRate);
-// juce::AudioFormatReader* getReaderFor(const juce::File& sample);
 
 // listener stuff
 void registerListener(SampleRateListener* l);
@@ -33,7 +31,6 @@ class SamplePlaybackBuffer {
 public:
   const double playbackSampleRate;
   const size_t lengthInSamples;
-  // SamplePlaybackBuffer(const juce::File& sample, double sampleRate);
   SamplePlaybackBuffer(juce::AudioFormatManager* manager,
                        const juce::File& sample,
                        double sampleRate);
@@ -53,9 +50,6 @@ private:
   std::unique_ptr<SamplePlaybackBuffer> buf;
 
 public:
-  // SamplePlayer(const juce::File& sample = FactorySamples::getSampleFile(
-  //                  FactorySamples::kick,
-  //                  OmniSampleLibrary::getSampleLibFolder()));
   SamplePlayer(juce::AudioFormatManager* manager,
                const juce::File& sample = FactorySamples::getSampleFile(
                    FactorySamples::kick,
