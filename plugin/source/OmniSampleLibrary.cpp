@@ -210,7 +210,9 @@ juce::File OmniSampleLibrary::getSampleLibFolder() {
   return libFolder;
 }
 
-static ValueTree buildLibChildTree(int categID, const String& fileName) {
+static ValueTree buildLibChildTree(int categID,
+                                   const String& fileName,
+                                   juce::AudioFormatManager* manager) {
   ValueTree vt(ID::SAMPLE_LIB_ENTRY);
   vt.setProperty(ID::sampleFileName, fileName, nullptr);
   auto now = juce::Time::getCurrentTime();
@@ -218,7 +220,7 @@ static ValueTree buildLibChildTree(int categID, const String& fileName) {
   auto file = OmniSampleLibrary::getSampleLibFolder().getChildFile(
       drumCategoryNames[categID] + "/" + fileName);
   jassert(file.existsAsFile());
-  auto reader = juce::rawToUniquePtr(AudioFile::getReaderFor(file));
+  auto reader = juce::rawToUniquePtr(manager->createReaderFor(file));
   jassert(reader != nullptr);
   auto lengthSeconds = (double)reader->lengthInSamples / reader->sampleRate;
   const int lengthMs = (int)(lengthSeconds * 1000.0f);
@@ -238,7 +240,7 @@ ValueTree OmniSampleLibrary::buildDefaultLibrary() {
 
     for (int f = 0; f < files.size(); ++f) {
       auto name = files[f].getRelativePathFrom(folder);
-      auto childTree = buildLibChildTree(i, name);
+      auto childTree = buildLibChildTree(i, name, this->manager);
       categTree.appendChild(childTree, nullptr);
     }
     vt.appendChild(categTree, nullptr);
@@ -267,8 +269,9 @@ static ValueTree loadFromXmlFile(const juce::File& libFile) {
   return ValueTree::fromXml(xmlStr);
 }
 
-OmniSampleLibrary::OmniSampleLibrary()
-    : libFolder(getSampleLibFolder()),
+OmniSampleLibrary::OmniSampleLibrary(juce::AudioFormatManager* mngr)
+    : manager(mngr),
+      libFolder(getSampleLibFolder()),
       sampleLibState(loadFromXmlFile(getLibraryDataFile())) {
   jassert(libFolder.exists() && libFolder.isDirectory());
   recordNewSamples();
@@ -301,7 +304,8 @@ void OmniSampleLibrary::recordNewSamples() {
       for (int f = 0; f < files.size(); ++f) {
         auto name = files[f].getFileName();
         if (!recordedInLibState(c, name)) {
-          sampleLibState.appendChild(buildLibChildTree(c, name), nullptr);
+          sampleLibState.appendChild(buildLibChildTree(c, name, manager),
+                                     nullptr);
         }
       }
     }

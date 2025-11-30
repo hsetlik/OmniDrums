@@ -1,5 +1,6 @@
 #pragma once
 #include "../OmniSampleLibrary.h"
+#include "juce_audio_formats/juce_audio_formats.h"
 #include "juce_events/juce_events.h"
 
 // Sample players should inherit from this to be notified of sample rate changes
@@ -13,11 +14,15 @@ public:
 // deals with parsing and converting audio files
 // of various file formats, sample rates, channel layouts, etc
 namespace AudioFile {
-size_t samplesNeededFor(const juce::File& sample, double playbackSampleRate);
+// size_t samplesNeededFor(const juce::File& sample, double playbackSampleRate);
+size_t samplesNeededFor(juce::AudioFormatManager* manager,
+                        const juce::File& sample,
+                        double playbackSampleRate);
 double getCurrentSampleRate();
 // call this from PluginProcessor.cpp any time the host sets the sample rate
 void setSampleRate(double newRate);
-juce::AudioFormatReader* getReaderFor(const juce::File& sample);
+// juce::AudioFormatReader* getReaderFor(const juce::File& sample);
+
 // listener stuff
 void registerListener(SampleRateListener* l);
 void deregisterListener(SampleRateListener* l);
@@ -28,7 +33,10 @@ class SamplePlaybackBuffer {
 public:
   const double playbackSampleRate;
   const size_t lengthInSamples;
-  SamplePlaybackBuffer(const juce::File& sample, double sampleRate);
+  // SamplePlaybackBuffer(const juce::File& sample, double sampleRate);
+  SamplePlaybackBuffer(juce::AudioFormatManager* manager,
+                       const juce::File& sample,
+                       double sampleRate);
   float operator[](int index) const { return buffer[(size_t)index]; }
   float operator[](size_t index) const { return buffer[index]; }
   float getValue(size_t index) const { return buffer[index]; }
@@ -39,11 +47,16 @@ private:
 
 class SamplePlayer : public SampleRateListener {
 private:
+  juce::AudioFormatManager* const parentManager;
   juce::File sampleFile;
   std::unique_ptr<SamplePlaybackBuffer> buf;
 
 public:
-  SamplePlayer(const juce::File& sample = FactorySamples::getSampleFile(
+  // SamplePlayer(const juce::File& sample = FactorySamples::getSampleFile(
+  //                  FactorySamples::kick,
+  //                  OmniSampleLibrary::getSampleLibFolder()));
+  SamplePlayer(juce::AudioFormatManager* manager,
+               const juce::File& sample = FactorySamples::getSampleFile(
                    FactorySamples::kick,
                    OmniSampleLibrary::getSampleLibFolder()));
   ~SamplePlayer() override;

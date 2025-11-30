@@ -9,10 +9,21 @@ namespace AudioFile {
 static double currentSampleRate = 44100.0f;
 static std::vector<SampleRateListener*> listeners = {};
 
-size_t samplesNeededFor(const juce::File& sample, double playbackSampleRate) {
-  juce::AudioFormatManager manager;
-  manager.registerBasicFormats();
-  auto reader = juce::rawToUniquePtr(manager.createReaderFor(sample));
+// size_t samplesNeededFor(const juce::File& sample, double playbackSampleRate)
+// {
+//   juce::AudioFormatManager manager;
+//   manager.registerBasicFormats();
+//   auto reader = juce::rawToUniquePtr(manager.createReaderFor(sample));
+//   jassert(reader != nullptr);
+//   const double fileDurationSeconds =
+//       (double)reader->lengthInSamples / reader->sampleRate;
+//   return (size_t)(fileDurationSeconds * playbackSampleRate);
+// }
+//
+size_t samplesNeededFor(juce::AudioFormatManager* manager,
+                        const juce::File& sample,
+                        double playbackSampleRate) {
+  auto reader = juce::rawToUniquePtr(manager->createReaderFor(sample));
   jassert(reader != nullptr);
   const double fileDurationSeconds =
       (double)reader->lengthInSamples / reader->sampleRate;
@@ -81,12 +92,36 @@ static float monoAtRelativePos(const juce::AudioBuffer<float>& buf, float pos) {
   return monoAtRelativePos_mono(buf, pos);
 }
 
-SamplePlaybackBuffer::SamplePlaybackBuffer(const juce::File& sample,
+// SamplePlaybackBuffer::SamplePlaybackBuffer(const juce::File& sample,
+//                                            double sampleRate)
+//     : playbackSampleRate(sampleRate),
+//       lengthInSamples(AudioFile::samplesNeededFor(sample, sampleRate)),
+//       buffer(new float[lengthInSamples]) {
+//   auto reader = juce::rawToUniquePtr(AudioFile::getReaderFor(sample));
+//   jassert(reader != nullptr);
+//   // 1. load the file into an AudioBuffer (this handles sample type
+//   conversion
+//   // for us)
+//   juce::AudioBuffer<float> fileBuf((int)reader->numChannels,
+//                                    (int)reader->lengthInSamples);
+//   jassert(
+//       reader->read(&fileBuf, 0, (int)reader->lengthInSamples, 0, true,
+//       true));
+//
+//   // 2. scale/convert as needed and write into the buffer
+//   for (size_t s = 0; s < lengthInSamples; ++s) {
+//     const float pos = (float)s / (float)lengthInSamples;
+//     buffer[s] = monoAtRelativePos(fileBuf, pos);
+//   }
+// }
+
+SamplePlaybackBuffer::SamplePlaybackBuffer(juce::AudioFormatManager* manager,
+                                           const juce::File& sample,
                                            double sampleRate)
     : playbackSampleRate(sampleRate),
-      lengthInSamples(AudioFile::samplesNeededFor(sample, sampleRate)),
+      lengthInSamples(AudioFile::samplesNeededFor(manager, sample, sampleRate)),
       buffer(new float[lengthInSamples]) {
-  auto reader = juce::rawToUniquePtr(AudioFile::getReaderFor(sample));
+  auto reader = juce::rawToUniquePtr(manager->createReaderFor(sample));
   jassert(reader != nullptr);
   // 1. load the file into an AudioBuffer (this handles sample type conversion
   // for us)
@@ -103,10 +138,22 @@ SamplePlaybackBuffer::SamplePlaybackBuffer(const juce::File& sample,
 }
 
 //===================================================
+//
+// SamplePlayer::SamplePlayer(const juce::File& sample)
+//     : sampleFile(sample),
+//       buf(std::make_unique<SamplePlaybackBuffer>(
+//           sampleFile,
+//           AudioFile::getCurrentSampleRate())) {
+//   AudioFile::registerListener(this);
+// }
+//
 
-SamplePlayer::SamplePlayer(const juce::File& sample)
-    : sampleFile(sample),
+SamplePlayer::SamplePlayer(juce::AudioFormatManager* manager,
+                           const juce::File& sample)
+    : parentManager(manager),
+      sampleFile(sample),
       buf(std::make_unique<SamplePlaybackBuffer>(
+          manager,
           sampleFile,
           AudioFile::getCurrentSampleRate())) {
   AudioFile::registerListener(this);
@@ -117,5 +164,5 @@ SamplePlayer::~SamplePlayer() {
 }
 
 void SamplePlayer::sampleRateSet(double newRate) {
-  buf.reset(new SamplePlaybackBuffer(sampleFile, newRate));
+  buf.reset(new SamplePlaybackBuffer(parentManager, sampleFile, newRate));
 }

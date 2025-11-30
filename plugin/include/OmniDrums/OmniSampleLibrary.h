@@ -14,16 +14,17 @@ ValueTree getDefaultSampleState(const SampleE& id);
 
 class OmniSampleLibrary {
 private:
+  juce::AudioFormatManager* const manager;
   juce::File libFolder;
   ValueTree sampleLibState;
   bool recordedInLibState(int drumCateg, const String& fileName) const;
   void recordNewSamples();
-  static ValueTree buildDefaultLibrary();
+  ValueTree buildDefaultLibrary();
 
 public:
   static juce::File getSampleLibFolder();
-  static juce::File getLibraryDataFile();
-  OmniSampleLibrary();
+  juce::File getLibraryDataFile();
+  OmniSampleLibrary(juce::AudioFormatManager* mngr);
   ~OmniSampleLibrary();
   juce::File fileForSample(const ValueTree& sampleState) const;
 };

@@ -18,9 +18,9 @@ SampleCache::~SampleCache() {
 }
 
 void SampleCache::addPlayerForTree(ValueTree& child) {
-  auto file = state->sampleLib.fileForSample(child);
+  auto file = state->sampleLib->fileForSample(child);
   const int channelToNotify = child[ID::sampleDrumChannel];
-  auto* player = players.add(new SamplePlayer(file));
+  auto* player = players.add(new SamplePlayer(state->getManager(), file));
   if (channelPlayers[(size_t)channelToNotify] != nullptr) {
     readyToFree.push_back(channelPlayers[(size_t)channelToNotify]);
   }

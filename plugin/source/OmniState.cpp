@@ -106,7 +106,10 @@ static apvts::ParameterLayout getParamLayout() {
 
 OmniState::OmniState(juce::AudioProcessor& proc)
     : audioState(proc, nullptr, ID::OMNI_AUDIO_STATE, getParamLayout()),
-      samplesState(defaultSampleState()) {}
+      samplesState(defaultSampleState()) {
+  manager.registerBasicFormats();
+  sampleLib = std::make_unique<OmniSampleLibrary>(&manager);
+}
 
 float OmniState::loadAudioParameter(const String& paramID) const {
   return audioState.getRawParameterValue(paramID)->load();
