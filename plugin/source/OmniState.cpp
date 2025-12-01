@@ -114,3 +114,9 @@ OmniState::OmniState(juce::AudioProcessor& proc)
 float OmniState::loadAudioParameter(const String& paramID) const {
   return audioState.getRawParameterValue(paramID)->load();
 }
+
+bool OmniState::channelHasSample(int channelIdx) const {
+  auto sampleTree =
+      samplesState.getChildWithProperty(ID::sampleDrumChannel, channelIdx);
+  return sampleTree.isValid();
+}

@@ -73,21 +73,9 @@ void DrumChannel::renderBlock(AudioBufF& buffer,
     float val = isPlaying ? lastOutput : 0.0f;
     float lVal = val * audioState.pan * audioState.gainLinear;
     float rVal = val * (1.0f - audioState.pan) * audioState.gainLinear;
+    leftRMS.tick(lVal);
+    rightRMS.tick(rVal);
     buffer.addSample(0, startSample + s, lVal);
     buffer.addSample(1, startSample + s, rVal);
   }
-}
-
-void DrumChannel::renderSamplesDryMix(float& left, float& right) const {
-  left += lastOutput * audioState.pan * audioState.gainLinear *
-          (1.0f - audioState.compressorMix);
-  right += lastOutput * (1.0f - audioState.pan) * audioState.gainLinear *
-           (1.0f - audioState.compressorMix);
-}
-
-void DrumChannel::renderSamplesCompressorMix(float& left, float& right) const {
-  left += lastOutput * audioState.pan * audioState.gainLinear *
-          audioState.compressorMix;
-  right += lastOutput * (1.0f - audioState.pan) * audioState.gainLinear * 1.0f -
-           audioState.compressorMix;
 }

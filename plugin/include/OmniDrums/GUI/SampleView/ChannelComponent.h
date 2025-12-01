@@ -54,7 +54,6 @@ private:
 
 public:
   OmniChannelComponent(OmniState* s, int chanIdx);
-
   // basic component stuff
   void resized() override;
   void paint(juce::Graphics& g) override;

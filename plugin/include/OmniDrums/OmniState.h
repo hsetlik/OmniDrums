@@ -18,4 +18,5 @@ public:
 
   OmniState(juce::AudioProcessor& proc);
   juce::AudioFormatManager* getManager() { return &manager; }
+  bool channelHasSample(int channelIdx) const;
 };

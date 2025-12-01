@@ -1,5 +1,6 @@
 #pragma once
 #include "SampleCache.h"
+#include "../Shared/RollingRMS.h"
 
 // initialize the channel objects with a pointer to one of these such that
 // they can add & remove themselves from the list of channels that need
@@ -34,6 +35,8 @@ private:
   float currentVelocity = 0.0f;
   float nextVelocity = 0.0f;
   float lastOutput = 0.0f;
+  RollingRMS leftRMS;
+  RollingRMS rightRMS;
 
 public:
   const int channel;

@@ -6,10 +6,7 @@
 #include "OmniDrums/Identifiers.h"
 
 DrumPadComponent::DrumPadComponent(OmniState* s, int idx)
-    : state(s),
-      channelIdx(idx),
-      iconToDraw(
-          Icons::getDrumIconWithColor(currentCateg, UIColor::orangeLight)) {
+    : state(s), channelIdx(idx), iconToDraw(juce::Image()) {
   updateIcon();
   updateMidiNote();
   startTimerHz(MAX_REPAINT_HZ);
@@ -30,6 +27,9 @@ static int categForDrumChannel(const ValueTree& parent, int drumChannel) {
 }
 
 void DrumPadComponent::updateIcon() {
+  if (!state->channelHasSample(channelIdx)) {
+    return;
+  }
   auto categID = categForDrumChannel(state->samplesState, channelIdx);
   if (categID != -1 && categID != (int)currentCateg) {
     currentCateg = (DrumCategE)categID;
@@ -61,15 +61,20 @@ void DrumPadComponent::timerCallback() {
 
 void DrumPadComponent::paint(juce::Graphics& g) {
   auto fBounds = getLocalBounds().toFloat();
-  auto bkgndImg = Assets::getImage(shouldDrawActive ? Assets::DrumPadOn
-                                                    : Assets::DrumPadOff);
-  g.drawImage(bkgndImg, fBounds);
-  auto iconBounds = iconToDraw.getBounds().toFloat();
-  const float aspectRatio = iconBounds.getWidth() / iconBounds.getHeight();
-  const float iconWidth = fBounds.getWidth() * 0.65f;
-  frect_t iconDest = {0.0f, 0.0f, iconWidth, iconWidth / aspectRatio};
-  iconDest = iconDest.withCentre(fBounds.getCentre());
-  g.drawImage(iconToDraw, iconDest);
+  if (state->channelHasSample(channelIdx)) {
+    auto bkgndImg = Assets::getImage(shouldDrawActive ? Assets::DrumPadOn
+                                                      : Assets::DrumPadOff);
+    g.drawImage(bkgndImg, fBounds);
+    auto iconBounds = iconToDraw.getBounds().toFloat();
+    const float aspectRatio = iconBounds.getWidth() / iconBounds.getHeight();
+    const float iconWidth = fBounds.getWidth() * 0.65f;
+    frect_t iconDest = {0.0f, 0.0f, iconWidth, iconWidth / aspectRatio};
+    iconDest = iconDest.withCentre(fBounds.getCentre());
+    g.drawImage(iconToDraw, iconDest);
+  } else {
+    g.setColour(UIColor::bkgndGray);
+    g.fillRect(fBounds);
+  }
   needsRepaint = false;
 }
 
