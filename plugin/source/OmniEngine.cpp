@@ -33,6 +33,15 @@ void OmniEngine::prepareForBlock() {
       drumChannels[i]->audioState.compressorMix = mixVal;
     }
   }
+  // 3. update the graphing data if needed
+  if (state->graphingData.wantsUpdate()) {
+    for (int i = 0; i < NUM_DRUM_CHANNELS; ++i) {
+      state->graphingData.setLeftChannelLevel(
+          i, drumChannels[i]->leftRMS.getCurrentLevel());
+      state->graphingData.setRightChannelLevel(
+          i, drumChannels[i]->rightRMS.getCurrentLevel());
+    }
+  }
 }
 
 void OmniEngine::handleMidiMessage(const juce::MidiMessage& msg) {

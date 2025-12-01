@@ -3,7 +3,56 @@
 #include "OmniDrums/Identifiers.h"
 #include "OmniDrums/OmniSampleLibrary.h"
 
-//------------------------------------------------------------------
+GraphingData::GraphingData() {
+  for (size_t c = 0; c < NUM_DRUM_CHANNELS; ++c) {
+    leftChanLevels[c] = 0.0f;
+    rightChanLevels[c] = 0.0f;
+  }
+  startTimerHz(MAX_REPAINT_HZ);
+}
+
+void GraphingData::setLeftChannelLevel(int idx, float rmsLevel) {
+  leftChanLevels[(size_t)idx].store(rmsLevel);
+}
+void GraphingData::setRightChannelLevel(int idx, float rmsLevel) {
+  rightChanLevels[(size_t)idx].store(rmsLevel);
+}
+
+float GraphingData::getLeftChannelLevel(int idx) const {
+  return leftChanLevels[(size_t)idx].load();
+}
+float GraphingData::getRightChannelLevel(int idx) const {
+  return rightChanLevels[(size_t)idx].load();
+}
+
+void GraphingData::timerCallback() {
+  updateWanted = true;
+}
+
+void GraphingData::updateFinished() {
+  updateWanted = false;
+  triggerAsyncUpdate();
+}
+
+void GraphingData::handleAsyncUpdate() {
+  for (auto* l : listeners)
+    l->graphingDataUpdated();
+}
+
+void GraphingData::registerListener(Listener* l) {
+  listeners.push_back(l);
+}
+
+void GraphingData::deregisterListener(Listener* l) {
+  for (auto it = listeners.begin(); it != listeners.end(); ++it) {
+    if (*it == l) {
+      listeners.erase(it);
+      return;
+    }
+  }
+}
+
+//=====================================================
 
 static ValueTree defaultSampleState() {
   ValueTree vt(ID::OMNI_SAMPLES_STATE);

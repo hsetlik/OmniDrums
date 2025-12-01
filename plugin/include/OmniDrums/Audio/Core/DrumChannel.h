@@ -35,11 +35,11 @@ private:
   float currentVelocity = 0.0f;
   float nextVelocity = 0.0f;
   float lastOutput = 0.0f;
-  RollingRMS leftRMS;
-  RollingRMS rightRMS;
 
 public:
   const int channel;
+  RollingRMS leftRMS;
+  RollingRMS rightRMS;
   channel_audio_state audioState;
   DrumChannel(int c, PlayingChannelSet* p);
   void tick();
