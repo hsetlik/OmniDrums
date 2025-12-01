@@ -8,7 +8,6 @@ GraphingData::GraphingData() {
     leftChanLevels[c] = 0.0f;
     rightChanLevels[c] = 0.0f;
   }
-  startTimerHz(MAX_REPAINT_HZ);
 }
 
 void GraphingData::setLeftChannelLevel(int idx, float rmsLevel) {

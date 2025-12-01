@@ -17,6 +17,10 @@ private:
 
 public:
   GraphingData();
+  // this allows us to skip all the graph updating code
+  // when the UI isn't open
+  void editorOpened() { startTimerHz(MAX_REPAINT_HZ); }
+  void editorClosed() { stopTimer(); }
   void timerCallback() override;
   void handleAsyncUpdate() override;
   bool wantsUpdate() const { return updateWanted; }
@@ -50,6 +54,7 @@ private:
 class OmniState {
 private:
   juce::AudioFormatManager manager;
+  int selectedChannel = -1;
 
 public:
   apvts audioState;
@@ -63,4 +68,6 @@ public:
   OmniState(juce::AudioProcessor& proc);
   juce::AudioFormatManager* getManager() { return &manager; }
   bool channelHasSample(int channelIdx) const;
+  bool channelIsSelected(int idx) const { return idx == selectedChannel; }
+  void selectChannel(int idx) { selectedChannel = idx; }
 };

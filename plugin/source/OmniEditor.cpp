@@ -7,11 +7,13 @@
 
 OmniEditor::OmniEditor(OmniState* s) : state(s), sampleView(s) {
   setLookAndFeel(&lnf);
+  state->graphingData.editorOpened();
   addAndMakeVisible(sampleView);
 }
 
 OmniEditor::~OmniEditor() {
   setLookAndFeel(nullptr);
+  state->graphingData.editorClosed();
   Icons::cleanupImages();
 }
 

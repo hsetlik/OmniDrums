@@ -1,4 +1,5 @@
 #include "OmniDrums/GUI/SampleView/ChannelComponent.h"
+#include "OmniDrums/GUI/SampleView/SampleView.h"
 #include "OmniDrums/GUI/Shared/Color.h"
 #include "OmniDrums/GUI/Shared/Fonts.h"
 #include "OmniDrums/GUI/Shared/Images.h"
@@ -85,6 +86,10 @@ void DrumPadComponent::resized() {
 void DrumPadComponent::mouseDown(const juce::MouseEvent& e) {
   if (e.mods.isLeftButtonDown()) {
     state->kbdState.noteOn(1, midiNote, 0.8f);
+    state->selectChannel(channelIdx);
+    auto* parent = findParentComponentOfClass<ViewedChannelsComponent>();
+    jassert(parent != nullptr);
+    parent->repaint();
   }
 }
 
@@ -121,7 +126,7 @@ void SampleNameComponent::paint(juce::Graphics& g) {
   static const float cornerRadius = 4.0f;
   g.setColour(UIColor::shadowGray);
   g.fillRoundedRectangle(fBounds, cornerRadius);
-  fBounds = fBounds.reduced(1.5f);
+  fBounds = fBounds.reduced(0.8f);
   g.setColour(UIColor::bkgndGray);
   g.fillRoundedRectangle(fBounds, cornerRadius);
   fBounds.removeFromLeft(fBounds.getHeight() * 0.5f);
@@ -129,7 +134,9 @@ void SampleNameComponent::paint(juce::Graphics& g) {
   aStr.setFont(Fonts::getFont(Fonts::RobotoLightItalic)
                    .withHeight(fBounds.getHeight() * 0.65f));
   aStr.setJustification(juce::Justification::centredLeft);
-  aStr.setColour(UIColor::borderGray);
+  auto textColor = (state->channelIsSelected(channelIdx)) ? UIColor::offWhite
+                                                          : UIColor::borderGray;
+  aStr.setColour(textColor);
   aStr.draw(g, fBounds);
 }
 
@@ -197,6 +204,11 @@ void OmniChannelComponent::paint(juce::Graphics& g) {
   auto fBounds = getLocalBounds().toFloat();
   const float yScale = fBounds.getHeight() / 210.0f;
   const float xScale = fBounds.getWidth() / 296.0f;
+  if (state->channelIsSelected(channelIdx)) {
+    g.setColour(UIColor::offWhite);
+    g.fillRect(fBounds);
+    fBounds = fBounds.reduced(0.8f);
+  }
   g.setColour(UIColor::shadowGray);
   g.fillRect(fBounds);
 
