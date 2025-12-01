@@ -151,6 +151,8 @@ target_sources(${PROJECT_NAME}
 				source/Util.cpp
 				${INCLUDE_DIR}/GUI/Shared/Util.h
 				${INCLUDE_DIR}/GUI/SampleView/SampleView.h
+				source/RollingRMS.cpp
+				${INCLUDE_DIR}/Audio/Shared/RollingRMS.h
         ${INCLUDE_DIR}/PluginProcessor.h
 )
 

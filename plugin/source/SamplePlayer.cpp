@@ -105,14 +105,14 @@ SamplePlaybackBuffer::SamplePlaybackBuffer(juce::AudioFormatManager* manager,
                        true));
 
   // 2. scale/convert as needed and write into the buffer
-  const size_t fadeOutStart = lengthInSamples - FADE_OUT_SAMPLES;
+  // const size_t fadeOutStart = lengthInSamples - FADE_OUT_SAMPLES;
   float sampleSum = 0.0f;
   for (size_t s = 0; s < lengthInSamples; ++s) {
     const float pos = (float)s / (float)lengthInSamples;
     buffer[s] = monoAtRelativePos(fileBuf, pos);
-    if (s >= fadeOutStart) {
-      buffer[s] *= gainRamp[s - fadeOutStart];
-    }
+    // if (s >= fadeOutStart) {
+    //   buffer[s] *= gainRamp[s - fadeOutStart];
+    // }
     sampleSum += buffer[s];
   }
 #ifdef REMOVE_DC_BIAS
