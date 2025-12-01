@@ -5,7 +5,7 @@
 #include "OmniDrums/Identifiers.h"
 
 namespace Assets {
-juce::Image getImage(const AssetE& id) {
+juce::Image& getImage(const AssetE& id) {
   static juce::Image iGradBar = juce::ImageFileFormat::loadFrom(
       AssetData::GradBar_6x1800_png, AssetData::GradBar_6x1800_pngSize);
   static juce::Image iKnobBkgnd = juce::ImageFileFormat::loadFrom(
@@ -22,8 +22,10 @@ juce::Image getImage(const AssetE& id) {
   static juce::Image iUpperBarBkgnd =
       juce::ImageFileFormat::loadFrom(AssetData::UpperBarBkgnd_296x84_png,
                                       AssetData::UpperBarBkgnd_296x84_pngSize);
-  static juce::Image iVuMeter = juce::ImageFileFormat::loadFrom(
-      AssetData::VuMeter_28x240_png, AssetData::VuMeter_28x240_pngSize);
+  static juce::Image iVuMeterOn = juce::ImageFileFormat::loadFrom(
+      AssetData::VuMeterOn_28x240_png, AssetData::VuMeterOn_28x240_pngSize);
+  static juce::Image iVuMeterOff = juce::ImageFileFormat::loadFrom(
+      AssetData::VuMeterOff_28x240_png, AssetData::VuMeterOff_28x240_pngSize);
   static juce::Image iDrumPadOff = juce::ImageFileFormat::loadFrom(
       AssetData::DrumPadOff_170x170_png, AssetData::DrumPadOff_170x170_pngSize);
   static juce::Image iDrumPadOn = juce::ImageFileFormat::loadFrom(
@@ -50,8 +52,11 @@ juce::Image getImage(const AssetE& id) {
     case UpperBarBkgnd:
       return iUpperBarBkgnd;
       break;
-    case VuMeter:
-      return iVuMeter;
+    case VuMeterOn:
+      return iVuMeterOn;
+      break;
+    case VuMeterOff:
+      return iVuMeterOff;
       break;
     case DrumPadOff:
       return iDrumPadOff;

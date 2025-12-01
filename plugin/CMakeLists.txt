@@ -43,7 +43,8 @@ set(ASSET_FILES
 "${ASSETS_DIR}/VertThumbOn_28x42.png"
 "${ASSETS_DIR}/DrumIconBkgnd_60x62.png"
 "${ASSETS_DIR}/UpperBarBkgnd_296x84.png"
-"${ASSETS_DIR}/VuMeter_28x240.png"
+"${ASSETS_DIR}/VuMeterOn_28x240.png"
+"${ASSETS_DIR}/VuMeterOff_28x240.png"
 "${ASSETS_DIR}/DrumPadOff_170x170.png"
 "${ASSETS_DIR}/DrumPadOn_170x170.png"
 )
@@ -153,6 +154,8 @@ target_sources(${PROJECT_NAME}
 				${INCLUDE_DIR}/GUI/SampleView/SampleView.h
 				source/RollingRMS.cpp
 				${INCLUDE_DIR}/Audio/Shared/RollingRMS.h
+				source/VUMeter.cpp
+				${INCLUDE_DIR}/GUI/SampleView/VUMeter.h
         ${INCLUDE_DIR}/PluginProcessor.h
 )
 

@@ -41,6 +41,7 @@ void OmniEngine::prepareForBlock() {
       state->graphingData.setRightChannelLevel(
           i, drumChannels[i]->rightRMS.getCurrentLevel());
     }
+    state->graphingData.updateFinished();
   }
 }
 

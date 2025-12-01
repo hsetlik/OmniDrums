@@ -4,10 +4,11 @@
 void RollingRMS::tick(float value) {
   // 1. subtract the oldest sample
   runningSum -= ringBuf.front();
-  // 2. overwrite the oldest sample
-  ringBuf.push(std::fabs(value));
-  // 3. add the newest sample
-  runningSum += ringBuf.front();
+  // 2. add the newest value
+  auto absVal = std::fabs(value);
+  runningSum += absVal;
+  // 3. update the ring buffer
+  ringBuf.push(absVal);
 }
 
 float RollingRMS::getCurrentLevel() const {

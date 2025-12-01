@@ -71,8 +71,8 @@ void DrumChannel::renderBlock(AudioBufF& buffer,
   for (int s = 0; s < numSamples; ++s) {
     tick();
     float val = isPlaying ? lastOutput : 0.0f;
-    float lVal = val * audioState.pan * audioState.gainLinear;
-    float rVal = val * (1.0f - audioState.pan) * audioState.gainLinear;
+    float rVal = val * audioState.pan * audioState.gainLinear;
+    float lVal = val * (1.0f - audioState.pan) * audioState.gainLinear;
     leftRMS.tick(lVal);
     rightRMS.tick(rVal);
     buffer.addSample(0, startSample + s, lVal);

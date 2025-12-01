@@ -136,7 +136,11 @@ void SampleNameComponent::paint(juce::Graphics& g) {
 //============================================================
 
 OmniChannelComponent::OmniChannelComponent(OmniState* s, int chanIdx)
-    : state(s), channelIdx(chanIdx), drumPad(s, chanIdx), nameComp(s, chanIdx) {
+    : state(s),
+      channelIdx(chanIdx),
+      drumPad(s, chanIdx),
+      nameComp(s, chanIdx),
+      vuMeter(s, chanIdx) {
   // set up sliders
   gainSlider.setSliderStyle(juce::Slider::Rotary);
   gainSlider.setTextBoxStyle(juce::Slider::NoTextBox, true, 0, 0);
@@ -151,10 +155,9 @@ OmniChannelComponent::OmniChannelComponent(OmniState* s, int chanIdx)
   panAttach.reset(
       new apvts::SliderAttachment(state->audioState, panID, panSlider));
   addAndMakeVisible(panSlider);
-
   addAndMakeVisible(drumPad);
-
   addAndMakeVisible(nameComp);
+  addAndMakeVisible(vuMeter);
 }
 
 void OmniChannelComponent::resized() {
@@ -166,6 +169,7 @@ void OmniChannelComponent::resized() {
   frect_t padBounds = {4.0f, 30.0f, 170.0f, 170.0f};
   frect_t gainBounds = {191.0f, 68.0f, 35.0f, 35.0f};
   frect_t panBounds = {190.0f, 157.0f, 35.0f, 35.0f};
+  frect_t meterBounds = {248.0f, 21.0f, 35.0f, 185.0f};
 
   nameComp.setBounds(
       GraphicsUtil::scaledFor(nameBounds, xScale, yScale).toNearestInt());
@@ -175,6 +179,8 @@ void OmniChannelComponent::resized() {
       GraphicsUtil::scaledFor(gainBounds, xScale, yScale).toNearestInt());
   panSlider.setBounds(
       GraphicsUtil::scaledFor(panBounds, xScale, yScale).toNearestInt());
+  vuMeter.setBounds(
+      GraphicsUtil::scaledFor(meterBounds, xScale, yScale).toNearestInt());
 }
 
 static AttString getParamAttString(const String& text, float yScale) {

@@ -1,7 +1,7 @@
 #pragma once
 #include "../../OmniState.h"
 
-#define RMS_LENGTH 256
+#define RMS_LENGTH 350
 
 class RingBuffer {
 private:
@@ -19,10 +19,8 @@ public:
     head = (head + 1) % bufLength;
   }
   size_t size() const { return bufLength; }
-  // read the newest value
-  float front() const { return buf[head]; }
   // read the oldest value
-  float back() const { return buf[(head + 1) % bufLength]; }
+  float front() const { return buf[head]; }
 };
 
 //------------------------------------------------------------

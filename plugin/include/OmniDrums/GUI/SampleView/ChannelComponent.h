@@ -4,6 +4,7 @@
 #include "../Shared/Fonts.h"
 #include "OmniDrums/Identifiers.h"
 #include "juce_graphics/juce_graphics.h"
+#include "VUMeter.h"
 
 class DrumPadComponent : public Component, public juce::Timer {
 private:
@@ -51,6 +52,7 @@ private:
   slider_attach_ptr panAttach;
   DrumPadComponent drumPad;
   SampleNameComponent nameComp;
+  ChannelVUMeter vuMeter;
 
 public:
   OmniChannelComponent(OmniState* s, int chanIdx);
