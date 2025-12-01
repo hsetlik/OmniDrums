@@ -4,9 +4,21 @@
 //===================================================
 
 static frange_t panRange = rangeWithCenter(PAN_MIN, PAN_MAX, PAN_DEFAULT);
-OmniEngine::OmniEngine(OmniState* s) : state(s), sampleCache(s) {
+OmniEngine::OmniEngine(OmniState* s)
+    : state(s),
+      sampleCache(s),
+      dryBuffer(2, currentBlockSize),
+      compBuffer(2, currentBlockSize) {
   for (int i = 0; i < NUM_DRUM_CHANNELS; ++i) {
     drumChannels.add(new DrumChannel(i, &playingChannels));
+  }
+}
+
+void OmniEngine::setBlockSize(int newSize) {
+  if (newSize != currentBlockSize) {
+    dryBuffer.setSize(2, newSize);
+    compBuffer.setSize(2, newSize);
+    currentBlockSize = newSize;
   }
 }
 
@@ -62,25 +74,37 @@ void OmniEngine::renderChannels(AudioBufF& buf,
   }
 }
 
+void OmniEngine::renderChannels(AudioBufF& dBuf,
+                                AudioBufF& cBuf,
+                                int startSample,
+                                int numSamples) {
+  for (auto* chan : drumChannels) {
+    chan->renderBlock(dBuf, cBuf, startSample, numSamples);
+  }
+}
+
 void OmniEngine::renderBlock(juce::AudioBuffer<float>& buffer,
                              juce::MidiBuffer& midiBuf) {
   // 1. update parameters
   prepareForBlock();
   int startSample = 0;
   int numSamples = buffer.getNumSamples();
+  jassert(numSamples == currentBlockSize);
+  dryBuffer.clear();
+  compBuffer.clear();
   state->kbdState.processNextMidiBuffer(midiBuf, 0, numSamples, true);
   auto midiIterator = midiBuf.findNextSamplePosition(0);
   bool firstEvent = true;
   const juce::ScopedLock sl(cs);
   for (; numSamples > 0; ++midiIterator) {
     if (midiIterator == midiBuf.cend()) {
-      renderChannels(buffer, startSample, numSamples);
-      return;
+      renderChannels(dryBuffer, compBuffer, startSample, numSamples);
+      break;
     }
     const auto metadata = *midiIterator;
     const int samplesToNextMessage = metadata.samplePosition - startSample;
     if (samplesToNextMessage >= numSamples) {
-      renderChannels(buffer, startSample, numSamples);
+      renderChannels(dryBuffer, compBuffer, startSample, numSamples);
       handleMidiMessage(metadata.getMessage());
       break;
     }
@@ -90,7 +114,7 @@ void OmniEngine::renderBlock(juce::AudioBuffer<float>& buffer,
       continue;
     }
     firstEvent = false;
-    renderChannels(buffer, startSample, samplesToNextMessage);
+    renderChannels(dryBuffer, compBuffer, startSample, samplesToNextMessage);
     handleMidiMessage(metadata.getMessage());
     startSample += samplesToNextMessage;
     numSamples -= samplesToNextMessage;
@@ -100,4 +124,11 @@ void OmniEngine::renderBlock(juce::AudioBuffer<float>& buffer,
                 [&](const juce::MidiMessageMetadata& meta) {
                   handleMidiMessage(meta.getMessage());
                 });
+  // now copy the dry/ comp buffers into the output
+  buffer.addFrom(0, 0, dryBuffer, 0, 0, currentBlockSize);
+  buffer.addFrom(1, 0, dryBuffer, 1, 0, currentBlockSize);
+  // TODO: manipulate the compressed buffer here eventually,
+  //  for now just add it to the output
+  buffer.addFrom(0, 0, compBuffer, 0, 0, currentBlockSize);
+  buffer.addFrom(1, 0, compBuffer, 1, 0, currentBlockSize);
 }

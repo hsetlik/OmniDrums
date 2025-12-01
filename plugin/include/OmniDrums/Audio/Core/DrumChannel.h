@@ -45,8 +45,10 @@ public:
   void tick();
   bool playing() const { return isPlaying; }
   void renderBlock(AudioBufF& buffer, int startSample, int numSamples);
-  void renderSamplesDryMix(float& left, float& right) const;
-  void renderSamplesCompressorMix(float& left, float& right) const;
+  void renderBlock(AudioBufF& dBuf,
+                   AudioBufF& cBuf,
+                   int startSample,
+                   int numSamples);
   void trigger(float velocity);
   void setPlayer(SamplePlayer* p) { player = p; }
   bool inUse() const { return player != nullptr; }

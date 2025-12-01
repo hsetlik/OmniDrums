@@ -15,9 +15,13 @@ private:
   juce::OwnedArray<DrumChannel> drumChannels;
   note_channel_map noteMap;
   int minimunBlockSize = 32;
+  int currentBlockSize = 128;
+  AudioBufF dryBuffer;
+  AudioBufF compBuffer;
 
 public:
   OmniEngine(OmniState* s);
+  void setBlockSize(int newSize);
   void renderBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiBuf);
 
 private:
@@ -25,4 +29,8 @@ private:
   void prepareForBlock();
   void handleMidiMessage(const juce::MidiMessage& msg);
   void renderChannels(AudioBufF& buf, int startSample, int numSamples);
+  void renderChannels(AudioBufF& dBuf,
+                      AudioBufF& cBuf,
+                      int startSample,
+                      int numSamples);
 };
