@@ -4,7 +4,7 @@
 #include "SampleView/SampleView.h"
 #include "ViewSelector.h"
 
-class OmniEditor : public juce::Component {
+class OmniEditor : public juce::Component, public ViewSelectorListener {
 private:
   OmniState* const state;
   OmniLookAndFeel lnf;
@@ -16,4 +16,6 @@ public:
   ~OmniEditor() override;
   void paint(juce::Graphics& g) override;
   void resized() override;
+  void viewSelected(const ViewE& id) override;
+  void libStateChanged(bool libIsOpen) override;
 };

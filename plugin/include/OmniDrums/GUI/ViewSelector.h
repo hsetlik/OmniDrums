@@ -26,6 +26,16 @@ public:
 };
 
 //----------------------------------------------------------------
+enum ViewE { vSamples, vCompressor, vRoom };
+class ViewSelectorListener {
+public:
+  ViewSelectorListener() {}
+  virtual ~ViewSelectorListener() {}
+  virtual void viewSelected(const ViewE& id) = 0;
+  virtual void libStateChanged(bool shoudBeOpen) = 0;
+};
+
+//----------------------------------------------------------------
 
 class ViewSelector : public Component {
 private:
@@ -35,6 +45,7 @@ private:
   ViewRadioButton roomBtn;
   LibOpenCloseButton libBtn;
   ViewRadioButton* selectedBtn = &sampleBtn;
+  std::vector<ViewSelectorListener*> listeners;
 
 public:
   ViewSelector(OmniState* s);
@@ -42,4 +53,6 @@ public:
   void paint(juce::Graphics& g) override;
   bool isSelected(ViewRadioButton* btn) const { return btn == selectedBtn; }
   void setSelected(ViewRadioButton* btn);
+  void addListener(ViewSelectorListener* ptr);
+  void removeListener(ViewSelectorListener* ptr);
 };

@@ -22,12 +22,12 @@ juce::Path ViewRadioButton::getTextPath(const frect_t fBounds) const {
   juce::Path p;
   ga.createPath(p);
   auto pBounds = p.getBounds().toFloat();
-  static const float halfPi = juce::MathConstants<float>::halfPi;
-  auto transform =
-      juce::AffineTransform()
-          .rotated(halfPi, pBounds.getCentreX(), pBounds.getCentreY())
-          .translated(fBounds.getCentreX() - pBounds.getCentreX(),
-                      fBounds.getCentreY() - pBounds.getCentreY());
+
+  auto transform = juce::AffineTransform()
+                       .rotated(juce::MathConstants<float>::halfPi,
+                                pBounds.getCentreX(), pBounds.getCentreY())
+                       .translated(fBounds.getCentreX() - pBounds.getCentreX(),
+                                   fBounds.getCentreY() - pBounds.getCentreY());
   p.applyTransform(transform);
   return p;
 }
@@ -85,13 +85,38 @@ ViewSelector::ViewSelector(OmniState* s)
   sampleBtn.onClick = [this]() { setSelected(&sampleBtn); };
   compressorBtn.onClick = [this]() { setSelected(&compressorBtn); };
   roomBtn.onClick = [this]() { setSelected(&roomBtn); };
+  libBtn.onClick = [this]() {
+    for (auto* l : listeners)
+      l->libStateChanged(libBtn.getToggleState());
+  };
 }
 
 void ViewSelector::setSelected(ViewRadioButton* btn) {
   if (btn != selectedBtn) {
     selectedBtn = btn;
     repaint();
-    // TODO: notify the rest of the UI of the selection change here
+    ViewE id = vSamples;
+    if (btn == &compressorBtn) {
+      id = vCompressor;
+    } else if (btn == &roomBtn) {
+      id = vRoom;
+    }
+    for (auto* l : listeners) {
+      l->viewSelected(id);
+    }
+  }
+}
+
+void ViewSelector::addListener(ViewSelectorListener* ptr) {
+  listeners.push_back(ptr);
+}
+
+void ViewSelector::removeListener(ViewSelectorListener* ptr) {
+  for (auto it = listeners.begin(); it != listeners.end(); ++it) {
+    if (*it == ptr) {
+      listeners.erase(it);
+      return;
+    }
   }
 }
 

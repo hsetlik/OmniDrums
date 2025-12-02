@@ -5,6 +5,7 @@
 #include "OmniDrums/GUI/Shared/Images.h"
 #include "OmniDrums/GUI/Shared/Util.h"
 #include "OmniDrums/GUI/ViewSelector.h"
+#include "juce_core/juce_core.h"
 
 OmniEditor::OmniEditor(OmniState* s)
     : state(s), sampleView(s), viewSelector(s) {
@@ -12,9 +13,11 @@ OmniEditor::OmniEditor(OmniState* s)
   state->graphingData.editorOpened();
   addAndMakeVisible(sampleView);
   addAndMakeVisible(viewSelector);
+  viewSelector.addListener(this);
 }
 
 OmniEditor::~OmniEditor() {
+  viewSelector.removeListener(this);
   setLookAndFeel(nullptr);
   state->graphingData.editorClosed();
   Icons::cleanupImages();
@@ -64,4 +67,29 @@ void OmniEditor::resized() {
   viewSelector.setBounds(vsBounds.toNearestInt());
   frect_t sampleViewBounds = fBounds.removeFromTop(630.0f * yScale);
   sampleView.setBounds(sampleViewBounds.toNearestInt());
+}
+
+void OmniEditor::viewSelected(const ViewE& id) {
+  switch (id) {
+    case vSamples:
+      sampleView.setEnabled(true);
+      sampleView.setVisible(true);
+      resized();
+      break;
+    case vCompressor:
+      sampleView.setEnabled(false);
+      sampleView.setVisible(false);
+      resized();
+      break;
+    case vRoom:
+      sampleView.setEnabled(false);
+      sampleView.setVisible(false);
+      resized();
+      break;
+  }
+}
+
+void OmniEditor::libStateChanged(bool libOpen) {
+  juce::ignoreUnused(libOpen);
+  resized();
 }
