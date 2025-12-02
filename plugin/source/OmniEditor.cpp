@@ -65,8 +65,12 @@ void OmniEditor::resized() {
   fBounds.removeFromTop(103.0f * yScale);
   auto vsBounds = fBounds.removeFromLeft(24.0f * xScale);
   viewSelector.setBounds(vsBounds.toNearestInt());
-  frect_t sampleViewBounds = fBounds.removeFromTop(630.0f * yScale);
-  sampleView.setBounds(sampleViewBounds.toNearestInt());
+  if (state->isLibOpen()) {
+    auto libBounds = fBounds.removeFromLeft(330 * xScale);
+    juce::ignoreUnused(libBounds);
+  }
+  frect_t mainViewBounds = fBounds.removeFromTop(630.0f * yScale);
+  sampleView.setBounds(mainViewBounds.toNearestInt());
 }
 
 void OmniEditor::viewSelected(const ViewE& id) {

@@ -6,6 +6,7 @@
 
 class ViewedChannelsComponent : public Component {
 private:
+  OmniState* const state;
   juce::OwnedArray<OmniChannelComponent> channels;
 
 public:

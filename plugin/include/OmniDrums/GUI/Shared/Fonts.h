@@ -3,7 +3,13 @@
 
 typedef juce::AttributedString AttString;
 namespace Fonts {
-enum FontE { KenyanBoldItalic, KenyanRegular, RobotoLightItalic };
+enum FontE {
+  KenyanBoldItalic,
+  KenyanRegular,
+  RobotoLightItalic,
+  RobotoMedItalic,
+  RobotoLight
+};
 
 juce::Font getFont(const FontE& id);
 }  // namespace Fonts

@@ -86,6 +86,7 @@ ViewSelector::ViewSelector(OmniState* s)
   compressorBtn.onClick = [this]() { setSelected(&compressorBtn); };
   roomBtn.onClick = [this]() { setSelected(&roomBtn); };
   libBtn.onClick = [this]() {
+    state->setLibOpen(libBtn.getToggleState());
     for (auto* l : listeners)
       l->libStateChanged(libBtn.getToggleState());
   };

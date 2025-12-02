@@ -20,6 +20,10 @@ juce::Font getFont(const FontE& id) {
       FontData::KenyanCoffeeRegular_otf, FontData::KenyanCoffeeRegular_otfSize);
   static juce::Font iRobotoLI = getFromBinary(
       FontData::RobotoLightItalic_ttf, FontData::RobotoLightItalic_ttfSize);
+  static juce::Font iRobotoL =
+      getFromBinary(FontData::RobotoLight_ttf, FontData::RobotoLight_ttfSize);
+  static juce::Font iRobotoMI = getFromBinary(
+      FontData::RobotoMediumItalic_ttf, FontData::RobotoMediumItalic_ttfSize);
   switch (id) {
     case KenyanBoldItalic:
       return iKenyanBI;
@@ -29,6 +33,12 @@ juce::Font getFont(const FontE& id) {
       break;
     case RobotoLightItalic:
       return iRobotoLI;
+      break;
+    case RobotoMedItalic:
+      return iRobotoMI;
+      break;
+    case RobotoLight:
+      return iRobotoL;
       break;
     default:
       jassert(false);

@@ -89,6 +89,7 @@ set(FONT_FILES
 "${FONTS_DIR}/KenyanCoffeeBoldItalic.otf"
 "${FONTS_DIR}/KenyanCoffeeRegular.otf"
 "${FONTS_DIR}/RobotoLightItalic.ttf"
+"${FONTS_DIR}/RobotoMediumItalic.ttf"
 "${FONTS_DIR}/RobotoLight.ttf"
 )
 

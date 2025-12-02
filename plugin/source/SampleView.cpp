@@ -3,7 +3,7 @@
 #include "OmniDrums/GUI/Shared/Util.h"
 //===================================================
 
-ViewedChannelsComponent::ViewedChannelsComponent(OmniState* s) {
+ViewedChannelsComponent::ViewedChannelsComponent(OmniState* s) : state(s) {
   // initialize all the channels here
   for (int i = 0; i < NUM_DRUM_CHANNELS; ++i) {
     channels.add(new OmniChannelComponent(s, i));
@@ -15,7 +15,7 @@ void ViewedChannelsComponent::resized() {
   auto editorParent = findParentComponentOfClass<SampleView>();
   jassert(editorParent != nullptr);
   auto parentBounds = editorParent->getBounds().toFloat();
-  const float xScale = parentBounds.getWidth() / 1776.0f;
+  const float xScale = parentBounds.getWidth() / state->mainViewWidth();
   const float yScale = parentBounds.getHeight() / 630.0f;
   static const float chanHeight = 210.0f;
   static const float chanWidth = 296.0f;

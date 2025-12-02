@@ -55,6 +55,7 @@ class OmniState {
 private:
   juce::AudioFormatManager manager;
   int selectedChannel = -1;
+  bool libIsOpen = false;
 
 public:
   apvts audioState;
@@ -70,4 +71,7 @@ public:
   bool channelHasSample(int channelIdx) const;
   bool channelIsSelected(int idx) const { return idx == selectedChannel; }
   void selectChannel(int idx) { selectedChannel = idx; }
+  void setLibOpen(bool shouldBeOpen) { libIsOpen = shouldBeOpen; }
+  bool isLibOpen() const { return libIsOpen; }
+  float mainViewWidth() const;
 };

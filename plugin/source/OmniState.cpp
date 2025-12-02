@@ -168,3 +168,7 @@ bool OmniState::channelHasSample(int channelIdx) const {
       samplesState.getChildWithProperty(ID::sampleDrumChannel, channelIdx);
   return sampleTree.isValid();
 }
+
+float OmniState::mainViewWidth() const {
+  return libIsOpen ? 1446.0f : 1776.0f;
+}
