@@ -156,6 +156,8 @@ target_sources(${PROJECT_NAME}
 				${INCLUDE_DIR}/Audio/Shared/RollingRMS.h
 				source/VUMeter.cpp
 				${INCLUDE_DIR}/GUI/SampleView/VUMeter.h
+				source/ViewSelector.cpp
+				${INCLUDE_DIR}/GUI/ViewSelector.h
         ${INCLUDE_DIR}/PluginProcessor.h
 )
 

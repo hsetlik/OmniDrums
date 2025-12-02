@@ -4,11 +4,14 @@
 #include "OmniDrums/GUI/Shared/Fonts.h"
 #include "OmniDrums/GUI/Shared/Images.h"
 #include "OmniDrums/GUI/Shared/Util.h"
+#include "OmniDrums/GUI/ViewSelector.h"
 
-OmniEditor::OmniEditor(OmniState* s) : state(s), sampleView(s) {
+OmniEditor::OmniEditor(OmniState* s)
+    : state(s), sampleView(s), viewSelector(s) {
   setLookAndFeel(&lnf);
   state->graphingData.editorOpened();
   addAndMakeVisible(sampleView);
+  addAndMakeVisible(viewSelector);
 }
 
 OmniEditor::~OmniEditor() {
@@ -57,7 +60,8 @@ void OmniEditor::resized() {
   const float yScale = fBounds.getHeight() / 1080.0f;
   const float xScale = fBounds.getWidth() / 1800.0f;
   fBounds.removeFromTop(103.0f * yScale);
-  fBounds.removeFromLeft(24.0f * xScale);
+  auto vsBounds = fBounds.removeFromLeft(24.0f * xScale);
+  viewSelector.setBounds(vsBounds.toNearestInt());
   frect_t sampleViewBounds = fBounds.removeFromTop(630.0f * yScale);
   sampleView.setBounds(sampleViewBounds.toNearestInt());
 }
