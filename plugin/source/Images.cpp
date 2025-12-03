@@ -100,7 +100,7 @@ juce::Image& getImage(const IconE& id) {
   static juce::Image iSearch = juce::ImageFileFormat::loadFrom(
       IconData::Search_256_png, IconData::Search_256_pngSize);
   static juce::Image iClose = juce::ImageFileFormat::loadFrom(
-      IconData::Search_256_png, IconData::Search_256_pngSize);
+      IconData::Close_256_png, IconData::Close_256_pngSize);
   switch (id) {
     case Kick:
       return iKick;

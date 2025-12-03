@@ -163,6 +163,8 @@ target_sources(${PROJECT_NAME}
 				${INCLUDE_DIR}/GUI/ViewSelector.h
 				source/SearchHeader.cpp
 				${INCLUDE_DIR}/GUI/Browser/SearchHeader.h
+        source/SampleList.cpp
+        ${INCLUDE_DIR}/GUI/Browser/SampleList.h
         ${INCLUDE_DIR}/PluginProcessor.h
 )
 

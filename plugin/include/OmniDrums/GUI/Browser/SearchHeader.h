@@ -47,7 +47,24 @@ private:
 
 //==================================================================
 
-class SearchHeader : public Component {
+class SearchHeader : public Component, public juce::TextEditor::Listener {
+private:
+  class ColumnHeadBtn : public juce::Button {
+  public:
+    ColumnHeadBtn(const String& txt);
+    void paintButton(juce::Graphics& g, bool highlighted, bool down) override;
+
+  private:
+    const String columnText;
+  };
+  //------------------------------------
+  LibSearchState searchState;
+
+  ColumnHeadBtn nameBtn;
+  ColumnHeadBtn dateBtn;
+  ColumnHeadBtn lengthBtn;
+  LibrarySearchBar searchBar;
+
 public:
   struct Listener {
   public:
@@ -55,4 +72,16 @@ public:
     virtual ~Listener() {}
     virtual void searchStateChanged(const LibSearchState& state) = 0;
   };
+  void addListener(Listener* l);
+  void removeListener(Listener* l);
+  //------------------------------------
+  SearchHeader();
+  ~SearchHeader() override;
+  void resized() override;
+  void paint(juce::Graphics& g) override;
+  void textEditorTextChanged(juce::TextEditor& te) override;
+
+private:
+  void notifyListeners();
+  std::vector<Listener*> listeners;
 };

@@ -8,12 +8,15 @@
 #include "juce_core/juce_core.h"
 
 OmniEditor::OmniEditor(OmniState* s)
-    : state(s), sampleView(s), viewSelector(s) {
+    : state(s), sampleView(s), viewSelector(s), browser(s) {
   setLookAndFeel(&lnf);
   state->graphingData.editorOpened();
   addAndMakeVisible(sampleView);
   addAndMakeVisible(viewSelector);
   viewSelector.addListener(this);
+  addAndMakeVisible(browser);
+  browser.setVisible(false);
+  browser.setEnabled(false);
 }
 
 OmniEditor::~OmniEditor() {
@@ -67,7 +70,7 @@ void OmniEditor::resized() {
   viewSelector.setBounds(vsBounds.toNearestInt());
   if (state->isLibOpen()) {
     auto libBounds = fBounds.removeFromLeft(330 * xScale);
-    juce::ignoreUnused(libBounds);
+    browser.setBounds(libBounds.toNearestInt());
   }
   frect_t mainViewBounds = fBounds.removeFromTop(630.0f * yScale);
   sampleView.setBounds(mainViewBounds.toNearestInt());
@@ -94,6 +97,7 @@ void OmniEditor::viewSelected(const ViewE& id) {
 }
 
 void OmniEditor::libStateChanged(bool libOpen) {
-  juce::ignoreUnused(libOpen);
+  browser.setVisible(libOpen);
+  browser.setEnabled(libOpen);
   resized();
 }

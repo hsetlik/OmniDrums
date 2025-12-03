@@ -1,5 +1,6 @@
 #pragma once
 #include "../OmniState.h"
+#include "OmniDrums/GUI/Browser/SampleList.h"
 #include "OmniDrums/GUI/Shared/OmniLookAndFeel.h"
 #include "SampleView/SampleView.h"
 #include "ViewSelector.h"
@@ -10,6 +11,7 @@ private:
   OmniLookAndFeel lnf;
   SampleView sampleView;
   ViewSelector viewSelector;
+  SampleBrowser browser;
 
 public:
   OmniEditor(OmniState* s);
