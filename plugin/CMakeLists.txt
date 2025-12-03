@@ -19,6 +19,8 @@ set(ICON_FILES
 "${ICONS_DIR}/Crash_256.png"
 "${ICONS_DIR}/Clap_256.png"
 "${ICONS_DIR}/Percussion_256.png"
+"${ICONS_DIR}/Search_256.png"
+"${ICONS_DIR}/Close_256.png"
 )
 
 
@@ -159,6 +161,8 @@ target_sources(${PROJECT_NAME}
 				${INCLUDE_DIR}/GUI/SampleView/VUMeter.h
 				source/ViewSelector.cpp
 				${INCLUDE_DIR}/GUI/ViewSelector.h
+				source/SearchHeader.cpp
+				${INCLUDE_DIR}/GUI/Browser/SearchHeader.h
         ${INCLUDE_DIR}/PluginProcessor.h
 )
 

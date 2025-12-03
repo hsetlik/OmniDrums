@@ -1,7 +1,5 @@
 #pragma once
-#include "../../OmniState.h"
-#include "../../Audio/Core/SampleCache.h"
-#include "OmniDrums/Identifiers.h"
+#include "SearchHeader.h"
 
 // component for each sample in the list
 class LibEntryComponent : public Component {
@@ -12,4 +10,3 @@ public:
   LibEntryComponent(OmniState* s, ValueTree tree);
   void paint(juce::Graphics& g) override;
 };
-
