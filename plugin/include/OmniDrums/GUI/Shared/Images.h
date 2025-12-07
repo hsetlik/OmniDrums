@@ -39,7 +39,9 @@ enum IconE {
   LibOpen,
   LibClosed,
   Close,
-  Search
+  Search,
+  DropdownOpen,
+  DropdownClosed
 };
 juce::Image& getImage(const IconE& id);
 juce::Image& getDrumIconWithColor(const DrumCategE& id, const Color& color);

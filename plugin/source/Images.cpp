@@ -101,6 +101,10 @@ juce::Image& getImage(const IconE& id) {
       IconData::Search_256_png, IconData::Search_256_pngSize);
   static juce::Image iClose = juce::ImageFileFormat::loadFrom(
       IconData::Close_256_png, IconData::Close_256_pngSize);
+  static juce::Image iDDOpen = juce::ImageFileFormat::loadFrom(
+      IconData::DropdownOpen_256_png, IconData::DropdownOpen_256_pngSize);
+  static juce::Image iDDClosed = juce::ImageFileFormat::loadFrom(
+      IconData::DropdownClosed_256_png, IconData::DropdownClosed_256_pngSize);
   switch (id) {
     case Kick:
       return iKick;
@@ -140,6 +144,12 @@ juce::Image& getImage(const IconE& id) {
       break;
     case Close:
       return iClose;
+      break;
+    case DropdownOpen:
+      return iDDOpen;
+      break;
+    case DropdownClosed:
+      return iDDClosed;
       break;
     default:
       jassert(false);

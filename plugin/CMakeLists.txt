@@ -21,6 +21,8 @@ set(ICON_FILES
 "${ICONS_DIR}/Percussion_256.png"
 "${ICONS_DIR}/Search_256.png"
 "${ICONS_DIR}/Close_256.png"
+"${ICONS_DIR}/DropdownClosed_256.png"
+"${ICONS_DIR}/DropdownOpen_256.png"
 )
 
 
