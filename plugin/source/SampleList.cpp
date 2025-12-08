@@ -47,8 +47,17 @@ static String getDateString(const juce::Time& time) {
   return str + yearStr;
 }
 
+static String getLengthString(int lengthMs) {
+  const int fraction = lengthMs % 1000;
+  const int secs = (lengthMs - fraction) / 1000;
+  auto fracString = String((float)fraction / 100.0f);
+  if (fracString.length() > 2) {
+    fracString = fracString.substring(0, 1);
+  }
+  return String(secs) + "." + fracString + "s";
+}
+
 void LibEntryComponent::paint(juce::Graphics& g) {
-  juce::ignoreUnused(g);
   auto fBounds = getLocalBounds().toFloat();
   // TODO: draw the outline if this sample is selected
   const float yScale = fBounds.getHeight() / 25.0f;
@@ -73,6 +82,12 @@ void LibEntryComponent::paint(juce::Graphics& g) {
   frect_t nameBounds = {5.0f * xScale, textY, 156.0f * xScale, txtHeight};
   auto nameStr = getAttStringForEntry(fileName, yScale);
   nameStr.draw(g, nameBounds);
+  frect_t dateBounds = {172.0f * xScale, textY, 73.0f * xScale, txtHeight};
+  auto dateStr = getAttStringForEntry(getDateString(timeAdded), yScale);
+  dateStr.draw(g, dateBounds);
+  frect_t lengthBounds = {252.0f * xScale, textY, 78.0f * xScale, txtHeight};
+  auto lengthStr = getAttStringForEntry(getLengthString(lengthMs), yScale);
+  lengthStr.draw(g, lengthBounds);
 }
 //===================================================
 DropdownButton::DropdownButton() : juce::Button("dropdownToggle") {
@@ -102,7 +117,37 @@ CategoryHeader::CategoryHeader(OmniState* s, int idx)
   };
 }
 
-void CategoryHeader::paint(juce::Graphics& g) {}
+void CategoryHeader::paint(juce::Graphics& g) {
+  auto fBounds = getLocalBounds().toFloat();
+  const float yScale = fBounds.getHeight() / 25.0f;
+  const float xScale = fBounds.getWidth() / 330.0f;
+  const float strokeSize = 0.5f * yScale;
+  // 1. draw the background and outine
+  g.setColour(UIColor::shadowGray);
+  g.fillRect(fBounds);
+  g.setColour(UIColor::borderGray);
+  g.drawRect(fBounds, strokeSize);
+  // 2. draw the text
+  AttString aStr(drumCategoryNames[categoryID]);
+  auto font =
+      Fonts::getFont(Fonts::RobotoMedItalic).withPointHeight(14.0f * yScale);
+  aStr.setFont(font);
+  aStr.setColour(UIColor::borderGray);
+  aStr.setJustification(juce::Justification::centredLeft);
+  const float txtHeight = 23.0f * yScale;
+  const float textY = 1.0f * yScale;
+  frect_t nameBounds = {5.0f * xScale, textY, 280.0f * xScale, txtHeight};
+  aStr.draw(g, nameBounds);
+}
+
+void CategoryHeader::resized() {
+  auto fBounds = getLocalBounds().toFloat();
+  const float yScale = fBounds.getHeight() / 25.0f;
+  const float xScale = fBounds.getWidth() / 330.0f;
+  frect_t btnBounds = {312.0f * xScale, 6.0f * yScale, 13.0f * xScale,
+                       13.0f * yScale};
+  btn.setBounds(btnBounds.toNearestInt());
+}
 
 //===================================================
 SampleBrowser::SampleBrowser(OmniState* s) : state(s) {

@@ -34,6 +34,7 @@ private:
 public:
   CategoryHeader(OmniState* s, int idx);
   void paint(juce::Graphics& g) override;
+  void resized() override;
   bool isOpen() const { return listIsOpen; }
 };
 
