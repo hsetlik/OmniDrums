@@ -150,6 +150,80 @@ void CategoryHeader::resized() {
 }
 
 //===================================================
+CategoryHolder::CategoryHolder(OmniState* s, SearchHeader* h, int idx)
+    : state(s), searchHeader(h), categoryID(idx), header(s, idx) {
+  addAndMakeVisible(header);
+  searchHeader->addListener(this);
+  // 1. create components for each entry
+  auto categTree = state->sampleLib->getCategoryTree(categoryID);
+  for (int i = 0; i < categTree.getNumChildren(); ++i) {
+    auto sampleTree = categTree.getChild(i);
+    auto* entry = entries.add(new LibEntryComponent(state, sampleTree));
+    addAndMakeVisible(entry);
+  }
+  resized();
+}
+CategoryHolder::~CategoryHolder() {
+  searchHeader->removeListener(this);
+}
+
+std::vector<LibEntryComponent*> CategoryHolder::getVisibleEntries() const {
+  std::vector<LibEntryComponent*> visible = {};
+  auto searchString = currentSearchText.toLowerCase();
+  if (header.isOpen()) {
+    for (auto* entry : entries) {
+      auto lowerCaseName = entry->getFileName().toLowerCase();
+      if (lowerCaseName.contains(searchString)) {
+        visible.push_back(entry);
+      }
+    }
+  }
+  return visible;
+}
+
+void CategoryHolder::sortEntries(std::vector<LibEntryComponent*>& list) const {
+  std::sort(list.begin(), list.end(),
+            [this](LibEntryComponent* a, LibEntryComponent* b) {
+              return a->compare(this->currentSortMode, *b);
+            });
+}
+
+int CategoryHolder::numBarsVisible() const {
+  auto vis = getVisibleEntries();
+  return 1 + (int)vis.size();
+}
+
+void CategoryHolder::searchStateChanged(const LibSearchState& search) {
+  currentSortMode = search.sortMode;
+  currentSearchText = search.searchText;
+  resized();
+}
+
+void CategoryHolder::resized() {
+  // 1. set all entries invisible/disabled to start
+  for (auto* e : entries) {
+    e->setVisible(false);
+    e->setEnabled(false);
+  }
+  // 2. determine which should be visible, reactivate then sort them
+  auto visEntries = getVisibleEntries();
+  sortEntries(visEntries);
+  // 3. place stuff
+  const float barHeight = yScale * 25.0f;
+  const float barWidth = xScale * 330.0f;
+  frect_t headerBounds = {0.0f, 0.0f, barWidth, barHeight};
+  header.setBounds(headerBounds.toNearestInt());
+  float y = barHeight;
+  for (auto* e : visEntries) {
+    frect_t bounds = {0.0f, y, barWidth, barHeight};
+    e->setVisible(true);
+    e->setEnabled(true);
+    e->setBounds(bounds.toNearestInt());
+    y += barHeight;
+  }
+}
+
+//===================================================
 SampleBrowser::SampleBrowser(OmniState* s) : state(s) {
   addAndMakeVisible(header);
   header.addListener(this);

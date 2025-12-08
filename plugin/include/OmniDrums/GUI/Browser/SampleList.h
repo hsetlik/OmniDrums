@@ -39,6 +39,33 @@ public:
 };
 
 //===========================================
+class CategoryHolder : public Component, public SearchHeader::Listener {
+private:
+  OmniState* const state;
+  SearchHeader* const searchHeader;
+  const int categoryID;
+  CategoryHeader header;
+  juce::OwnedArray<LibEntryComponent> entries;
+  int currentSortMode = 0;
+  String currentSearchText = "";
+  float xScale = 1.0f;
+  float yScale = 1.0f;
+  std::vector<LibEntryComponent*> getVisibleEntries() const;
+  void sortEntries(std::vector<LibEntryComponent*>& list) const;
+
+public:
+  CategoryHolder(OmniState* s, SearchHeader* h, int idx);
+  ~CategoryHolder() override;
+  void setScales(float x, float y) {
+    xScale = x;
+    yScale = y;
+  }
+  int numBarsVisible() const;
+  void resized() override;
+  void searchStateChanged(const LibSearchState& search) override;
+};
+
+//===========================================
 
 class SampleBrowser : public Component, public SearchHeader::Listener {
 private:

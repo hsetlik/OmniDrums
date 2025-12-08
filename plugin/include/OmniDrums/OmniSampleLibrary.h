@@ -27,4 +27,5 @@ public:
   OmniSampleLibrary(juce::AudioFormatManager* mngr);
   ~OmniSampleLibrary();
   juce::File fileForSample(const ValueTree& sampleState) const;
+  ValueTree getCategoryTree(int idx);
 };

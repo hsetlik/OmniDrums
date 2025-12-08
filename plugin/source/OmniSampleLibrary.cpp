@@ -322,3 +322,9 @@ juce::File OmniSampleLibrary::fileForSample(
   jassert(file.existsAsFile());
   return file;
 }
+
+ValueTree OmniSampleLibrary::getCategoryTree(int idx) {
+  auto tree = sampleLibState.getChildWithProperty(ID::sampleCategoryIndex, idx);
+  jassert(tree.isValid());
+  return tree;
+}
