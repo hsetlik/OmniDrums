@@ -215,6 +215,7 @@ static ValueTree buildLibChildTree(int categID,
                                    juce::AudioFormatManager* manager) {
   ValueTree vt(ID::SAMPLE_LIB_ENTRY);
   vt.setProperty(ID::sampleFileName, fileName, nullptr);
+  vt.setProperty(ID::sampleCategoryIndex, categID, nullptr);
   auto now = juce::Time::getCurrentTime();
   vt.setProperty(ID::libSampleDateAdded, now.toISO8601(true), nullptr);
   auto file = OmniSampleLibrary::getSampleLibFolder().getChildFile(
@@ -309,8 +310,7 @@ void OmniSampleLibrary::recordNewSamples() {
         if (!files[f].isHidden()) {
           auto name = files[f].getFileName();
           if (!recordedInLibState(c, name)) {
-            sampleLibState.appendChild(buildLibChildTree(c, name, manager),
-                                       nullptr);
+            categTree.appendChild(buildLibChildTree(c, name, manager), nullptr);
           }
         }
       }
