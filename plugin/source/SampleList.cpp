@@ -31,10 +31,16 @@ bool LibEntryComponent::compare(int sortMode,
   return false;
 }
 
+void LibEntryComponent::mouseDown(const juce::MouseEvent& e) {
+  auto* parent = findParentComponentOfClass<SampleBrowser>();
+  jassert(parent != nullptr);
+  parent->setSelected(this);
+}
+
 static AttString getAttStringForEntry(const String& text, float yScale) {
   AttString str(text);
   str.setFont(
-      Fonts::getFont(Fonts::RobotoLightItalic).withPointHeight(10.0f * yScale));
+      Fonts::getFont(Fonts::RobotoLightItalic).withHeight(10.0f * yScale));
   str.setColour(UIColor::offWhite);
   str.setJustification(juce::Justification::centredLeft);
   return str;
@@ -43,7 +49,7 @@ static AttString getAttStringForEntry(const String& text, float yScale) {
 static String getDateString(const juce::Time& time) {
   String str = String(time.getDayOfMonth()) + "-";
   str += String(time.getMonth() + 1) + "-";
-  auto yearStr = String(time.getYear()).substring(2, 3);
+  auto yearStr = String(time.getYear()).substring(2, 4);
   return str + yearStr;
 }
 
@@ -59,22 +65,24 @@ static String getLengthString(int lengthMs) {
 
 void LibEntryComponent::paint(juce::Graphics& g) {
   auto fBounds = getLocalBounds().toFloat();
-  // TODO: draw the outline if this sample is selected
   const float yScale = fBounds.getHeight() / 25.0f;
   const float xScale = fBounds.getWidth() / 330.0f;
   const float strokeSize = 0.5f * yScale;
+  const bool selected = isSelected();
   // 1. draw the background and outine
+  auto outlineColor = selected ? UIColor::offWhite : UIColor::bkgndGray;
   g.setColour(UIColor::bkgndGray);
   g.fillRect(fBounds);
-  g.setColour(UIColor::shadowGray);
+  g.setColour(outlineColor);
   g.drawRect(fBounds, strokeSize);
   // 2. draw the section dividers
   const float divWidth = 2.0f * xScale;
   const float divHeight = 23.0f * yScale;
   frect_t div1Bounds = {164.0f * xScale, yScale, divWidth, divHeight};
-  g.setColour(UIColor::borderGray);
+  auto divColor = selected ? UIColor::offWhite : UIColor::borderGray;
+  g.setColour(divColor);
   g.fillRoundedRectangle(div1Bounds, divWidth / 2.0f);
-  frect_t div2Bounds = {245.0f * xScale, yScale, divWidth, divHeight};
+  frect_t div2Bounds = {265.0f * xScale, yScale, divWidth, divHeight};
   g.fillRoundedRectangle(div2Bounds, divWidth / 2.0f);
   // 3. draw the text
   const float txtHeight = 18.0f * yScale;
@@ -85,9 +93,17 @@ void LibEntryComponent::paint(juce::Graphics& g) {
   frect_t dateBounds = {172.0f * xScale, textY, 73.0f * xScale, txtHeight};
   auto dateStr = getAttStringForEntry(getDateString(timeAdded), yScale);
   dateStr.draw(g, dateBounds);
-  frect_t lengthBounds = {252.0f * xScale, textY, 78.0f * xScale, txtHeight};
+  frect_t lengthBounds = {268.0f * xScale, textY, 62.0f * xScale, txtHeight};
   auto lengthStr = getAttStringForEntry(getLengthString(lengthMs), yScale);
   lengthStr.draw(g, lengthBounds);
+}
+
+void LibEntryComponent::enablementChanged() {
+  if (!isEnabled()) {
+    auto* parent = findParentComponentOfClass<SampleBrowser>();
+    if (parent != nullptr && isSelected())
+      parent->setSelected(nullptr);
+  }
 }
 
 bool LibEntryComponent::isSelected() const {

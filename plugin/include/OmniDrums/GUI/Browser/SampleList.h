@@ -17,6 +17,8 @@ public:
   juce::Time getDateAdded() const { return timeAdded; }
   int getLengthMs() const { return lengthMs; }
   bool compare(int sortMode, const LibEntryComponent& other) const;
+  void mouseDown(const juce::MouseEvent& e) override;
+  void enablementChanged() override;
 };
 
 class DropdownButton : public juce::Button {
