@@ -8,6 +8,7 @@ class LibEntryComponent : public Component {
   String fileName;
   juce::Time timeAdded;
   int lengthMs;
+  bool isSelected() const;
 
 public:
   LibEntryComponent(OmniState* s, ValueTree tree);
@@ -66,15 +67,38 @@ public:
 };
 
 //===========================================
+class ViewedSampleList : public Component {
+private:
+  juce::OwnedArray<CategoryHolder> categories;
+  float xScale = 1.0f;
+  float yScale = 1.0f;
+
+public:
+  ViewedSampleList(OmniState* s, SearchHeader* h);
+  void setScales(float x, float y);
+  void resized() override;
+};
+
+//===========================================
 
 class SampleBrowser : public Component, public SearchHeader::Listener {
 private:
   OmniState* const state;
   SearchHeader header;
+  juce::Viewport vpt;
+  ViewedSampleList list;
+  LibEntryComponent* selectedEntry = nullptr;
 
 public:
   SampleBrowser(OmniState* s);
   ~SampleBrowser() override;
   void searchStateChanged(const LibSearchState& searchState) override;
   void resized() override;
+  bool isSelected(const LibEntryComponent* entry) const {
+    return selectedEntry == entry;
+  }
+  void setSelected(LibEntryComponent* e) {
+    selectedEntry = e;
+    repaint();
+  }
 };

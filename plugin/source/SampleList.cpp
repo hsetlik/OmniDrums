@@ -34,7 +34,7 @@ bool LibEntryComponent::compare(int sortMode,
 static AttString getAttStringForEntry(const String& text, float yScale) {
   AttString str(text);
   str.setFont(
-      Fonts::getFont(Fonts::RobotoLightItalic).withPointHeight(14.0f * yScale));
+      Fonts::getFont(Fonts::RobotoLightItalic).withPointHeight(10.0f * yScale));
   str.setColour(UIColor::offWhite);
   str.setJustification(juce::Justification::centredLeft);
   return str;
@@ -52,7 +52,7 @@ static String getLengthString(int lengthMs) {
   const int secs = (lengthMs - fraction) / 1000;
   auto fracString = String((float)fraction / 100.0f);
   if (fracString.length() > 2) {
-    fracString = fracString.substring(0, 1);
+    fracString = fracString.substring(0, 2);
   }
   return String(secs) + "." + fracString + "s";
 }
@@ -77,8 +77,8 @@ void LibEntryComponent::paint(juce::Graphics& g) {
   frect_t div2Bounds = {245.0f * xScale, yScale, divWidth, divHeight};
   g.fillRoundedRectangle(div2Bounds, divWidth / 2.0f);
   // 3. draw the text
-  const float txtHeight = 23.0f * yScale;
-  const float textY = 1.0f * yScale;
+  const float txtHeight = 18.0f * yScale;
+  const float textY = 3.0f * yScale;
   frect_t nameBounds = {5.0f * xScale, textY, 156.0f * xScale, txtHeight};
   auto nameStr = getAttStringForEntry(fileName, yScale);
   nameStr.draw(g, nameBounds);
@@ -88,6 +88,12 @@ void LibEntryComponent::paint(juce::Graphics& g) {
   frect_t lengthBounds = {252.0f * xScale, textY, 78.0f * xScale, txtHeight};
   auto lengthStr = getAttStringForEntry(getLengthString(lengthMs), yScale);
   lengthStr.draw(g, lengthBounds);
+}
+
+bool LibEntryComponent::isSelected() const {
+  auto* parent = findParentComponentOfClass<SampleBrowser>();
+  jassert(parent != nullptr);
+  return parent->isSelected(this);
 }
 //===================================================
 DropdownButton::DropdownButton() : juce::Button("dropdownToggle") {
@@ -111,7 +117,7 @@ CategoryHeader::CategoryHeader(OmniState* s, int idx)
   addAndMakeVisible(btn);
   btn.onClick = [this]() {
     listIsOpen = !listIsOpen;
-    auto* parentComp = getParentComponent();
+    auto* parentComp = findParentComponentOfClass<SampleBrowser>();
     jassert(parentComp != nullptr);
     parentComp->resized();
   };
@@ -224,9 +230,44 @@ void CategoryHolder::resized() {
 }
 
 //===================================================
-SampleBrowser::SampleBrowser(OmniState* s) : state(s) {
+ViewedSampleList::ViewedSampleList(OmniState* s, SearchHeader* h) {
+  for (int i = 0; i < NUM_DRUM_CATEGORIES; ++i) {
+    auto* category = categories.add(new CategoryHolder(s, h, i));
+    addAndMakeVisible(category);
+  }
+}
+
+void ViewedSampleList::setScales(float x, float y) {
+  xScale = x;
+  yScale = y;
+  for (auto* c : categories) {
+    c->setScales(xScale, yScale);
+  }
+}
+
+void ViewedSampleList::resized() {
+  const float barWidth = 330.0f * xScale;
+  const float barHeight = 25.0f * yScale;
+  float yPos = 0.0f;
+  for (auto* c : categories) {
+    float currentHeight = barHeight * (float)c->numBarsVisible();
+    frect_t bounds = {0.0f, yPos, barWidth, currentHeight};
+    c->setBounds(bounds.toNearestInt());
+    yPos += currentHeight;
+  }
+  setSize((int)barWidth, (int)yPos);
+}
+
+//===================================================
+SampleBrowser::SampleBrowser(OmniState* s) : state(s), list(s, &header) {
   addAndMakeVisible(header);
   header.addListener(this);
+  vpt.setViewedComponent(&list, false);
+  vpt.setViewPosition(0, 0);
+  vpt.setInterceptsMouseClicks(true, true);
+  vpt.setScrollBarsShown(true, false, false, false);
+  addAndMakeVisible(vpt);
+  list.resized();
 }
 
 SampleBrowser::~SampleBrowser() {
@@ -240,6 +281,10 @@ void SampleBrowser::searchStateChanged(const LibSearchState& searchState) {
 void SampleBrowser::resized() {
   auto fBounds = getLocalBounds().toFloat();
   const float yScale = fBounds.getHeight() / 610.0f;
+  const float xScale = fBounds.getWidth() / 330.0f;
   auto headerBounds = fBounds.removeFromTop(48.0f * yScale);
   header.setBounds(headerBounds.toNearestInt());
+  list.setScales(xScale, yScale);
+  list.resized();
+  vpt.setBounds(fBounds.toNearestInt());
 }
