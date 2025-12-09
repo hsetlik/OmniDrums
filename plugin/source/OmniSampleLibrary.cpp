@@ -196,6 +196,7 @@ ValueTree getDefaultSampleState(const SampleE& id) {
 }  // namespace FactorySamples
 
 //===================================================
+//===================================================
 
 juce::File OmniSampleLibrary::getSampleLibFolder() {
   auto appData =
@@ -215,7 +216,7 @@ static ValueTree buildLibChildTree(int categID,
                                    juce::AudioFormatManager* manager) {
   ValueTree vt(ID::SAMPLE_LIB_ENTRY);
   vt.setProperty(ID::sampleFileName, fileName, nullptr);
-  vt.setProperty(ID::sampleCategoryIndex, categID, nullptr);
+  vt.setProperty(ID::sampleDrumCategory, categID, nullptr);
   auto now = juce::Time::getCurrentTime();
   vt.setProperty(ID::libSampleDateAdded, now.toISO8601(true), nullptr);
   auto file = OmniSampleLibrary::getSampleLibFolder().getChildFile(
@@ -320,7 +321,8 @@ void OmniSampleLibrary::recordNewSamples() {
 
 juce::File OmniSampleLibrary::fileForSample(
     const ValueTree& sampleState) const {
-  jassert(sampleState.hasType(ID::OMNI_PLAYER_SAMPLE));
+  jassert(sampleState.hasType(ID::OMNI_PLAYER_SAMPLE) ||
+          sampleState.hasType(ID::SAMPLE_LIB_ENTRY));
   const int iCategory = sampleState[ID::sampleDrumCategory];
   const String fileName = sampleState[ID::sampleFileName];
   auto file =

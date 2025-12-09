@@ -13,6 +13,7 @@ typedef juce::Rectangle<int> irect_t;
 
 namespace UIColor {
 DECLARE_COLOR(orangeLight, 226, 79, 54)
+DECLARE_COLOR(greenLight, 128, 254, 85)
 DECLARE_COLOR(bkgndGray, 51, 51, 51)
 DECLARE_COLOR(shadowGray, 25, 25, 25)
 DECLARE_COLOR(borderGray, 102, 102, 102)

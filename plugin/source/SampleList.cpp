@@ -1,4 +1,6 @@
 #include "OmniDrums/GUI/Browser/SampleList.h"
+#include "OmniDrums/Audio/SamplePlayer.h"
+#include "OmniDrums/Common.h"
 #include "OmniDrums/GUI/Browser/SearchHeader.h"
 #include "OmniDrums/GUI/Shared/Color.h"
 #include "OmniDrums/GUI/Shared/Fonts.h"
@@ -31,7 +33,12 @@ bool LibEntryComponent::compare(int sortMode,
   return false;
 }
 
+juce::File LibEntryComponent::getSampleFile() const {
+  return state->sampleLib->fileForSample(sampleTree);
+}
+
 void LibEntryComponent::mouseDown(const juce::MouseEvent& e) {
+  juce::ignoreUnused(e);
   auto* parent = findParentComponentOfClass<SampleBrowser>();
   jassert(parent != nullptr);
   parent->setSelected(this);
@@ -111,6 +118,8 @@ bool LibEntryComponent::isSelected() const {
   jassert(parent != nullptr);
   return parent->isSelected(this);
 }
+//===================================================
+
 //===================================================
 DropdownButton::DropdownButton() : juce::Button("dropdownToggle") {
   setClickingTogglesState(true);
@@ -273,10 +282,130 @@ void ViewedSampleList::resized() {
   }
   setSize((int)barWidth, (int)yPos);
 }
+//===================================================
+
+DetailView::PlaybackButton::PlaybackButton() : juce::Button("playback") {}
+
+void DetailView::PlaybackButton::paintButton(juce::Graphics& g,
+                                             bool down,
+                                             bool highlighted) {
+  juce::ignoreUnused(highlighted);
+  auto& img = down ? Icons::getImage(Icons::PlaybackOn)
+                   : Icons::getImage(Icons::PlaybackOff);
+  auto fBounds = getLocalBounds().toFloat();
+  g.drawImage(img, fBounds);
+}
+
+DetailView::DetailView() : waveImg(juce::Image::ARGB, waveWidth, 110, true) {
+  manager.registerBasicFormats();
+  addAndMakeVisible(playBtn);
+  playBtn.setVisible(false);
+  playBtn.setEnabled(false);
+  // TODO: wire the button to play back the selected sample
+}
+
+void DetailView::setSelectedSample(LibEntryComponent* comp) {
+  entry = comp;
+  playBtn.setVisible(entry != nullptr);
+  playBtn.setEnabled(entry != nullptr);
+  if (entry != nullptr) {
+    drawWaveformImage();
+  }
+  repaint();
+}
+
+static juce::Path createMonoPath(juce::AudioBuffer<float>& buf, int numPixels) {
+  juce::Path p;
+  p.startNewSubPath(0.0f, 55.0f);
+  for (int i = 0; i < numPixels; ++i) {
+    auto fPos = (float)i / (float)numPixels;
+    int sampleIdx = (int)(fPos * (float)buf.getNumSamples());
+    float yPos = 55.0f + (buf.getSample(0, sampleIdx) * 50.0f);
+    jassert(yPos >= 0.0f && yPos <= 145.0f);
+    p.lineTo((float)i, yPos);
+  }
+  return p;
+}
+
+static juce::Path createStereoPath(juce::AudioBuffer<float>& buf,
+                                   int numPixels) {
+  juce::Path p;
+  p.startNewSubPath(0.0f, 55.0f);
+  for (int i = 0; i < numPixels; ++i) {
+    auto fPos = (float)i / (float)numPixels;
+    int sampleIdx = (int)(fPos * (float)buf.getNumSamples());
+    const float normSample =
+        flerp(buf.getSample(0, sampleIdx), buf.getSample(1, sampleIdx), 0.5f);
+    const float yPos = 55.0f + (normSample * 50.0f);
+    p.lineTo((float)i, yPos);
+  }
+  return p;
+}
+
+void DetailView::drawWaveformImage() {
+  // 1. grip the file and load it into a buffer
+  auto file = entry->getSampleFile();
+  jassert(file.existsAsFile());
+  auto reader = juce::rawToUniquePtr(manager.createReaderFor(file));
+  AudioBufF buffer((int)reader->numChannels, (int)reader->lengthInSamples);
+  jassert(reader->read(&buffer, 0, buffer.getNumSamples(), 0, true,
+                       buffer.getNumChannels() > 1));
+
+  juce::Graphics g(waveImg);
+  irect_t bounds = {0, 0, waveWidth, 110};
+  g.setColour(UIColor::shadowGray);
+  g.fillRect(bounds);
+
+  auto p = buffer.getNumChannels() > 1 ? createStereoPath(buffer, waveWidth)
+                                       : createMonoPath(buffer, waveWidth);
+  g.setColour(UIColor::greenLight);
+  g.strokePath(p, juce::PathStrokeType(1.0f));
+}
+
+void DetailView::resized() {
+  auto fBounds = getLocalBounds().toFloat();
+  const float xScale = fBounds.getWidth() / 330.0f;
+  const float yScale = fBounds.getHeight() / 145.0f;
+  frect_t btnBounds = {3.0f * xScale, 28.0f * yScale, 30.0f * xScale,
+                       110.0f * yScale};
+  playBtn.setBounds(btnBounds.toNearestInt());
+}
+
+void DetailView::paint(juce::Graphics& g) {
+  auto fBounds = getLocalBounds().toFloat();
+  const float xScale = fBounds.getWidth() / 330.0f;
+  const float yScale = fBounds.getHeight() / 145.0f;
+  // 1. fill the backdround
+  g.setColour(UIColor::bkgndGray);
+  g.fillRect(fBounds);
+  if (entry != nullptr) {
+    // 2. draw the divider thing
+    const float divHeight = 2.0f * yScale;
+    frect_t divBounds = {3.0f * xScale, 20.0f * yScale, 324.0f * xScale,
+                         divHeight};
+    g.setColour(UIColor::borderGray);
+    g.fillRoundedRectangle(divBounds, yScale);
+    // 3. draw the file name
+    frect_t textBounds = {3.0f * xScale, 3.0f * yScale, 324.0f * xScale,
+                          14.0f * yScale};
+    AttString aStr(entry->getFileName());
+    auto font = Fonts::getFont(Fonts::RobotoLightItalic)
+                    .withHeight(textBounds.getHeight());
+    aStr.setFont(font);
+    aStr.setColour(UIColor::offWhite);
+    aStr.setJustification(juce::Justification::centredLeft);
+    aStr.draw(g, textBounds);
+    // 4. draw the waveform
+    frect_t waveBounds = {36.0f * xScale, 28.0f * yScale, 285.0f * xScale,
+                          110.0f * yScale};
+    g.drawImage(waveImg, waveBounds);
+  }
+}
 
 //===================================================
 SampleBrowser::SampleBrowser(OmniState* s) : state(s), list(s, &header) {
   addAndMakeVisible(header);
+  addAndMakeVisible(detailView);
   header.addListener(this);
   vpt.setViewedComponent(&list, false);
   vpt.setViewPosition(0, 0);
@@ -294,12 +423,20 @@ void SampleBrowser::searchStateChanged(const LibSearchState& searchState) {
   juce::ignoreUnused(searchState);
 }
 
+void SampleBrowser::setSelected(LibEntryComponent* e) {
+  selectedEntry = e;
+  detailView.setSelectedSample(e);
+  repaint();
+}
+
 void SampleBrowser::resized() {
   auto fBounds = getLocalBounds().toFloat();
   const float yScale = fBounds.getHeight() / 610.0f;
   const float xScale = fBounds.getWidth() / 330.0f;
   auto headerBounds = fBounds.removeFromTop(48.0f * yScale);
   header.setBounds(headerBounds.toNearestInt());
+  auto detailBounds = fBounds.removeFromBottom(145.0f * yScale);
+  detailView.setBounds(detailBounds.toNearestInt());
   list.setScales(xScale, yScale);
   list.resized();
   vpt.setBounds(fBounds.toNearestInt());

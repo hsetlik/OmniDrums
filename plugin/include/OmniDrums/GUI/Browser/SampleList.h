@@ -19,12 +19,13 @@ public:
   bool compare(int sortMode, const LibEntryComponent& other) const;
   void mouseDown(const juce::MouseEvent& e) override;
   void enablementChanged() override;
+  juce::File getSampleFile() const;
 };
 
 class DropdownButton : public juce::Button {
 public:
   DropdownButton();
-  void paintButton(juce::Graphics& g, bool down, bool highlighted);
+  void paintButton(juce::Graphics& g, bool down, bool highlighted) override;
 };
 // // header for each category
 class CategoryHeader : public Component {
@@ -82,6 +83,29 @@ public:
 };
 
 //===========================================
+class DetailView : public Component {
+private:
+  struct PlaybackButton : public juce::Button {
+  public:
+    PlaybackButton();
+    void paintButton(juce::Graphics& g, bool down, bool highlighted) override;
+  };
+  PlaybackButton playBtn;
+  juce::Image waveImg;
+  LibEntryComponent* entry = nullptr;
+  static const int waveWidth = 285;
+  juce::AudioFormatManager manager;
+  // this is where we draw the waveform
+  void drawWaveformImage();
+
+public:
+  DetailView();
+  void resized() override;
+  void paint(juce::Graphics& g) override;
+  void setSelectedSample(LibEntryComponent* comp);
+};
+
+//===========================================
 
 class SampleBrowser : public Component, public SearchHeader::Listener {
 private:
@@ -90,6 +114,7 @@ private:
   juce::Viewport vpt;
   ViewedSampleList list;
   LibEntryComponent* selectedEntry = nullptr;
+  DetailView detailView;
 
 public:
   SampleBrowser(OmniState* s);
@@ -99,8 +124,5 @@ public:
   bool isSelected(const LibEntryComponent* entry) const {
     return selectedEntry == entry;
   }
-  void setSelected(LibEntryComponent* e) {
-    selectedEntry = e;
-    repaint();
-  }
+  void setSelected(LibEntryComponent* e);
 };

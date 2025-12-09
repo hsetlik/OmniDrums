@@ -105,6 +105,10 @@ juce::Image& getImage(const IconE& id) {
       IconData::DropdownOpen_256_png, IconData::DropdownOpen_256_pngSize);
   static juce::Image iDDClosed = juce::ImageFileFormat::loadFrom(
       IconData::DropdownClosed_256_png, IconData::DropdownClosed_256_pngSize);
+  static juce::Image iPlaybackOn = juce::ImageFileFormat::loadFrom(
+      IconData::PlaybackOn_256_png, IconData::PlaybackOn_256_pngSize);
+  static juce::Image iPlaybackOff = juce::ImageFileFormat::loadFrom(
+      IconData::PlaybackOff_256_png, IconData::PlaybackOff_256_pngSize);
   switch (id) {
     case Kick:
       return iKick;
@@ -141,6 +145,12 @@ juce::Image& getImage(const IconE& id) {
       break;
     case Search:
       return iSearch;
+      break;
+    case PlaybackOn:
+      return iPlaybackOn;
+      break;
+    case PlaybackOff:
+      return iPlaybackOff;
       break;
     case Close:
       return iClose;

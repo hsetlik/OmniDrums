@@ -23,6 +23,8 @@ set(ICON_FILES
 "${ICONS_DIR}/Close_256.png"
 "${ICONS_DIR}/DropdownClosed_256.png"
 "${ICONS_DIR}/DropdownOpen_256.png"
+"${ICONS_DIR}/PlaybackOn_256.png"
+"${ICONS_DIR}/PlaybackOff_256.png"
 )
 
 
