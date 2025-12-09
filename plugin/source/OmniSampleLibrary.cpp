@@ -239,9 +239,11 @@ ValueTree OmniSampleLibrary::buildDefaultLibrary() {
     auto files = folder.findChildFiles(juce::File::findFiles, true);
 
     for (int f = 0; f < files.size(); ++f) {
-      auto name = files[f].getRelativePathFrom(folder);
-      auto childTree = buildLibChildTree(i, name, this->manager);
-      categTree.appendChild(childTree, nullptr);
+      if (!files[f].isHidden()) {
+        auto name = files[f].getRelativePathFrom(folder);
+        auto childTree = buildLibChildTree(i, name, this->manager);
+        categTree.appendChild(childTree, nullptr);
+      }
     }
     vt.appendChild(categTree, nullptr);
   }
@@ -285,7 +287,8 @@ OmniSampleLibrary::~OmniSampleLibrary() {
 
 bool OmniSampleLibrary::recordedInLibState(int drumCateg,
                                            const String& fileName) const {
-  auto categTree = sampleLibState.getChild(drumCateg);
+  auto categTree =
+      sampleLibState.getChildWithProperty(ID::sampleCategoryIndex, drumCateg);
   if (!categTree.isValid() || !categTree.hasType(ID::SAMPLE_LIB_CATEGORY)) {
     jassert(false);
     return false;
@@ -299,13 +302,16 @@ void OmniSampleLibrary::recordNewSamples() {
   for (int c = 0; c < NUM_DRUM_CATEGORIES; ++c) {
     auto folder = getSampleLibFolder().getChildFile(drumCategoryNames[c]);
     auto files = folder.findChildFiles(juce::File::findFiles, true);
-    auto categTree = sampleLibState.getChild(c);
+    auto categTree =
+        sampleLibState.getChildWithProperty(ID::sampleCategoryIndex, c);
     if (files.size() != categTree.getNumChildren()) {
       for (int f = 0; f < files.size(); ++f) {
-        auto name = files[f].getFileName();
-        if (!recordedInLibState(c, name)) {
-          sampleLibState.appendChild(buildLibChildTree(c, name, manager),
-                                     nullptr);
+        if (!files[f].isHidden()) {
+          auto name = files[f].getFileName();
+          if (!recordedInLibState(c, name)) {
+            sampleLibState.appendChild(buildLibChildTree(c, name, manager),
+                                       nullptr);
+          }
         }
       }
     }
