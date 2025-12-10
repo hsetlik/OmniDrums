@@ -7,6 +7,7 @@
 #include "OmniDrums/GUI/Shared/Images.h"
 #include "OmniDrums/Identifiers.h"
 #include "juce_core/juce_core.h"
+#include "juce_gui_basics/juce_gui_basics.h"
 
 LibEntryComponent::LibEntryComponent(OmniState* s, ValueTree tree)
     : state(s), sampleTree(tree) {
@@ -39,9 +40,22 @@ juce::File LibEntryComponent::getSampleFile() const {
 
 void LibEntryComponent::mouseDown(const juce::MouseEvent& e) {
   juce::ignoreUnused(e);
-  auto* parent = findParentComponentOfClass<SampleBrowser>();
-  jassert(parent != nullptr);
-  parent->setSelected(this);
+  auto* container =
+      juce::DragAndDropContainer::findParentDragContainerFor(this);
+  jassert(container != nullptr);
+  // get this sample's path relative to the lib folder
+  auto libFolder = OmniSampleLibrary::getSampleLibFolder();
+  auto sampleFile = state->sampleLib->fileForSample(sampleTree);
+  const String path = sampleFile.getRelativePathFrom(libFolder);
+  container->startDragging(path, this);
+}
+
+void LibEntryComponent::mouseUp(const juce::MouseEvent& e) {
+  if (e.mouseWasClicked()) {
+    auto* parent = findParentComponentOfClass<SampleBrowser>();
+    jassert(parent != nullptr);
+    parent->setSelected(this);
+  }
 }
 
 static AttString getAttStringForEntry(const String& text, float yScale) {
@@ -356,16 +370,21 @@ void DetailView::drawWaveformImage() {
   AudioBufF buffer((int)reader->numChannels, (int)reader->lengthInSamples);
   jassert(reader->read(&buffer, 0, buffer.getNumSamples(), 0, true,
                        buffer.getNumChannels() > 1));
-
+  // 2. draw the background
   juce::Graphics g(waveImg);
   irect_t bounds = {0, 0, waveWidth, 110};
   g.setColour(UIColor::shadowGray);
   g.fillRect(bounds);
+  juce::Path centerLine;
+  centerLine.startNewSubPath(0, 55);
+  centerLine.lineTo(waveWidth, 55);
+  g.setColour(UIColor::borderGray);
+  g.strokePath(centerLine, juce::PathStrokeType(0.5f));
 
   auto p = buffer.getNumChannels() > 1 ? createStereoPath(buffer, waveWidth)
                                        : createMonoPath(buffer, waveWidth);
-  g.setColour(UIColor::greenLight);
-  g.strokePath(p, juce::PathStrokeType(1.0f));
+  g.setColour(UIColor::greenLight.withAlpha(0.9f));
+  g.strokePath(p, juce::PathStrokeType(0.7f));
 }
 
 void DetailView::resized() {

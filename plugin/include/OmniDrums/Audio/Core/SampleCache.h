@@ -19,6 +19,8 @@ public:
   void valueTreeChildRemoved(ValueTree& parent,
                              ValueTree& removedChild,
                              int index) override;
+  void valueTreePropertyChanged(ValueTree& changedTree,
+                                const juce::Identifier& propertyID) override;
   // each drum channel should set an internal pointer with this
   // function at the beginning of each processBlock
   SamplePlayer* playerForChannel(int drumChannel) const {

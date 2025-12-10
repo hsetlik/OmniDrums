@@ -172,3 +172,13 @@ bool OmniState::channelHasSample(int channelIdx) const {
 float OmniState::mainViewWidth() const {
   return libIsOpen ? 1446.0f : 1776.0f;
 }
+
+void OmniState::addSampleTreeFor(const ValueTree& entryTree, int drumChannel) {
+  const int categID = entryTree[ID::sampleDrumCategory];
+  const String fileName = entryTree[ID::sampleFileName];
+  ValueTree sampleTree(ID::OMNI_PLAYER_SAMPLE);
+  sampleTree.setProperty(ID::sampleDrumCategory, categID, nullptr);
+  sampleTree.setProperty(ID::sampleFileName, fileName, nullptr);
+  sampleTree.setProperty(ID::sampleDrumChannel, drumChannel, nullptr);
+  samplesState.appendChild(sampleTree, nullptr);
+}

@@ -222,3 +222,27 @@ void OmniChannelComponent::paint(juce::Graphics& g) {
   gainAttStr.draw(g, gainBounds);
   panAttStr.draw(g, panBounds);
 }
+
+bool OmniChannelComponent::isInterestedInDragSource(
+    const juce::DragAndDropTarget::SourceDetails& dragSourceDetails) {
+  const String fileName = dragSourceDetails.description;
+  return state->sampleLib->sampleFileExists(fileName);
+}
+
+void OmniChannelComponent::itemDropped(
+    const juce::DragAndDropTarget::SourceDetails& dragSourceDetails) {
+  const String fileName = dragSourceDetails.description;
+  auto entryTree = state->sampleLib->getLibEntryTree(fileName);
+  if (!state->channelHasSample(channelIdx)) {
+    state->addSampleTreeFor(entryTree, channelIdx);
+    return;
+  }
+  auto sampleTree = state->samplesState.getChildWithProperty(
+      ID::sampleDrumChannel, channelIdx);
+  jassert(sampleTree.isValid());
+  const int drumCateg = entryTree[ID::sampleDrumCategory];
+  const String sampleName = entryTree[ID::sampleFileName];
+  sampleTree.setProperty(ID::sampleDrumCategory, drumCateg, nullptr);
+  sampleTree.setProperty(ID::sampleFileName, sampleName, nullptr);
+  repaint();
+}

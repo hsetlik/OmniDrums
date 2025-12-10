@@ -80,3 +80,11 @@ void SampleCache::valueTreeChildRemoved(ValueTree& parent,
     readyToFree.push_back(player);
   }
 }
+
+void SampleCache::valueTreePropertyChanged(ValueTree& changedTree,
+                                           const juce::Identifier& propertyID) {
+  jassert(changedTree.hasType(ID::OMNI_PLAYER_SAMPLE));
+  if (propertyID == ID::sampleFileName) {
+    addPlayerForTree(changedTree);
+  }
+}

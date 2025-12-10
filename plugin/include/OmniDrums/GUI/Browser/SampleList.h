@@ -18,6 +18,7 @@ public:
   int getLengthMs() const { return lengthMs; }
   bool compare(int sortMode, const LibEntryComponent& other) const;
   void mouseDown(const juce::MouseEvent& e) override;
+  void mouseUp(const juce::MouseEvent& e) override;
   void enablementChanged() override;
   juce::File getSampleFile() const;
 };

@@ -336,3 +336,22 @@ ValueTree OmniSampleLibrary::getCategoryTree(int idx) {
   jassert(tree.isValid());
   return tree;
 }
+
+bool OmniSampleLibrary::sampleFileExists(const String& path) const {
+  auto file = libFolder.getChildFile(path);
+  return file.existsAsFile();
+}
+
+ValueTree OmniSampleLibrary::getLibEntryTree(const String& path) {
+  auto file = libFolder.getChildFile(path);
+  jassert(file.existsAsFile());
+  auto categName = file.getParentDirectory().getFileName();
+  auto categTree =
+      sampleLibState.getChildWithProperty(ID::sampleCategoryName, categName);
+  jassert(categTree.isValid());
+  auto childName = file.getFileName();
+  auto childTree =
+      categTree.getChildWithProperty(ID::sampleFileName, childName);
+  jassert(childTree.isValid());
+  return childTree;
+}

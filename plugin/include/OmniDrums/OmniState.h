@@ -76,6 +76,7 @@ public:
   void setLibOpen(bool shouldBeOpen) { libIsOpen = shouldBeOpen; }
   bool isLibOpen() const { return libIsOpen; }
   float mainViewWidth() const;
+  void addSampleTreeFor(const ValueTree& entryTree, int drumChannel);
   // preview playback stuff-------------------------
   void previewSample(juce::File& file) {
     fileToPreview = file;

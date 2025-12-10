@@ -42,7 +42,7 @@ public:
 };
 
 //============================================================
-class OmniChannelComponent : public Component {
+class OmniChannelComponent : public Component, public juce::DragAndDropTarget {
 private:
   OmniState* const state;
   const int channelIdx;
@@ -59,4 +59,11 @@ public:
   // basic component stuff
   void resized() override;
   void paint(juce::Graphics& g) override;
+  bool isInterestedInDragSource(
+      const juce::DragAndDropTarget::SourceDetails& dragSourceDetails) override;
+  void itemDropped(
+      const juce::DragAndDropTarget::SourceDetails& dragSourceDetails) override;
+  void itemDragEnter(const juce::DragAndDropTarget::SourceDetails&) override {}
+  void itemDragExit(const juce::DragAndDropTarget::SourceDetails&) override {}
+  void itemDragMove(const juce::DragAndDropTarget::SourceDetails&) override {}
 };
