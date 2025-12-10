@@ -1,6 +1,44 @@
 #include "OmniDrums/Audio/Core/OmniEngine.h"
 #include "OmniDrums/Identifiers.h"
 #include "juce_audio_basics/juce_audio_basics.h"
+#include "juce_core/juce_core.h"
+
+PreviewPlayer::PreviewPlayer(OmniState* s)
+    : state(s), player(nullptr), sampleFile(juce::File()) {}
+
+void PreviewPlayer::previewSample(juce::File& file) {
+  if (currentStage != Idle)
+    return;
+  sampleFile = file;
+  currentStage = WaitingOnPlayer;
+  triggerAsyncUpdate();
+}
+
+void PreviewPlayer::handleAsyncUpdate() {
+  player.reset(new SamplePlayer(state->getManager(), sampleFile));
+  currentSample = 0;
+  lengthInSamples = (int)player->lengthInSamples();
+  currentStage = Playing;
+}
+
+void PreviewPlayer::renderPreview(AudioBufF& dryBuf,
+                                  AudioBufF& compBuf,
+                                  int startSample,
+                                  int numSamples) {
+  juce::ignoreUnused(compBuf);
+  for (int s = 0; s < numSamples; ++s) {
+    const float val = (currentSample < lengthInSamples)
+                          ? player->getValue((size_t)currentSample)
+                          : 0.0f;
+    dryBuf.addSample(0, startSample + s, val);
+    dryBuf.addSample(1, startSample + s, val);
+    ++currentSample;
+  }
+  if (currentSample >= lengthInSamples) {
+    currentStage = Idle;
+  }
+}
+
 //===================================================
 
 static frange_t panRange = rangeWithCenter(PAN_MIN, PAN_MAX, PAN_DEFAULT);
@@ -8,7 +46,8 @@ OmniEngine::OmniEngine(OmniState* s)
     : state(s),
       sampleCache(s),
       dryBuffer(2, currentBlockSize),
-      compBuffer(2, currentBlockSize) {
+      compBuffer(2, currentBlockSize),
+      prevPlayer(s) {
   for (int i = 0; i < NUM_DRUM_CHANNELS; ++i) {
     drumChannels.add(new DrumChannel(i, &playingChannels));
   }
@@ -23,6 +62,10 @@ void OmniEngine::setBlockSize(int newSize) {
 }
 
 void OmniEngine::prepareForBlock() {
+  // update the preview player if needed
+  if (state->waitingOnPreview()) {
+    prevPlayer.previewSample(state->getPreviewedSample());
+  }
   // clear the note map
   std::fill(noteMap.begin(), noteMap.end(), -1);
   for (int i = 0; i < NUM_DRUM_CHANNELS; ++i) {
@@ -80,6 +123,9 @@ void OmniEngine::renderChannels(AudioBufF& dBuf,
                                 int numSamples) {
   for (auto* chan : drumChannels) {
     chan->renderBlock(dBuf, cBuf, startSample, numSamples);
+  }
+  if (prevPlayer.isPlaying()) {
+    prevPlayer.renderPreview(dBuf, cBuf, startSample, numSamples);
   }
 }
 

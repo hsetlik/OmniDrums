@@ -296,12 +296,18 @@ void DetailView::PlaybackButton::paintButton(juce::Graphics& g,
   g.drawImage(img, fBounds);
 }
 
-DetailView::DetailView() : waveImg(juce::Image::ARGB, waveWidth, 110, true) {
+DetailView::DetailView(OmniState* s)
+    : state(s), waveImg(juce::Image::ARGB, waveWidth, 110, true) {
   manager.registerBasicFormats();
   addAndMakeVisible(playBtn);
   playBtn.setVisible(false);
   playBtn.setEnabled(false);
-  // TODO: wire the button to play back the selected sample
+  playBtn.onClick = [this]() {
+    if (entry != nullptr) {
+      auto file = entry->getSampleFile();
+      state->previewSample(file);
+    }
+  };
 }
 
 void DetailView::setSelectedSample(LibEntryComponent* comp) {
@@ -403,7 +409,8 @@ void DetailView::paint(juce::Graphics& g) {
 }
 
 //===================================================
-SampleBrowser::SampleBrowser(OmniState* s) : state(s), list(s, &header) {
+SampleBrowser::SampleBrowser(OmniState* s)
+    : state(s), list(s, &header), detailView(s) {
   addAndMakeVisible(header);
   addAndMakeVisible(detailView);
   header.addListener(this);

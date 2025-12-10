@@ -7,10 +7,6 @@
 
 class SampleCache : public ValueTree::Listener {
 private:
-  struct ChannelPlayerPair {
-    int channel;
-    SamplePlayer* player;
-  };
   OmniState* const state;
   juce::OwnedArray<SamplePlayer> players;
   std::vector<SamplePlayer*> readyToFree = {};

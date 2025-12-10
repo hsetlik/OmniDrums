@@ -91,6 +91,7 @@ private:
     void paintButton(juce::Graphics& g, bool down, bool highlighted) override;
   };
   PlaybackButton playBtn;
+  OmniState* const state;
   juce::Image waveImg;
   LibEntryComponent* entry = nullptr;
   static const int waveWidth = 285;
@@ -99,7 +100,7 @@ private:
   void drawWaveformImage();
 
 public:
-  DetailView();
+  DetailView(OmniState* s);
   void resized() override;
   void paint(juce::Graphics& g) override;
   void setSelectedSample(LibEntryComponent* comp);

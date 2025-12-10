@@ -55,7 +55,9 @@ class OmniState {
 private:
   juce::AudioFormatManager manager;
   int selectedChannel = -1;
+  bool previewRequested = false;
   bool libIsOpen = false;
+  juce::File fileToPreview;
 
 public:
   apvts audioState;
@@ -74,4 +76,14 @@ public:
   void setLibOpen(bool shouldBeOpen) { libIsOpen = shouldBeOpen; }
   bool isLibOpen() const { return libIsOpen; }
   float mainViewWidth() const;
+  // preview playback stuff-------------------------
+  void previewSample(juce::File& file) {
+    fileToPreview = file;
+    previewRequested = true;
+  }
+  bool waitingOnPreview() const { return previewRequested; }
+  juce::File& getPreviewedSample() {
+    previewRequested = false;
+    return fileToPreview;
+  }
 };
