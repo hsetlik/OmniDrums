@@ -53,12 +53,15 @@ private:
   DrumPadComponent drumPad;
   SampleNameComponent nameComp;
   ChannelVUMeter vuMeter;
+  bool leftBtnDown = false;
 
 public:
   OmniChannelComponent(OmniState* s, int chanIdx);
   // basic component stuff
   void resized() override;
   void paint(juce::Graphics& g) override;
+  void mouseUp(const juce::MouseEvent& e) override;
+  void mouseDown(const juce::MouseEvent& e) override;
   bool isInterestedInDragSource(
       const juce::DragAndDropTarget::SourceDetails& dragSourceDetails) override;
   void itemDropped(

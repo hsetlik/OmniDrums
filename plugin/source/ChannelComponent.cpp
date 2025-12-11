@@ -223,6 +223,22 @@ void OmniChannelComponent::paint(juce::Graphics& g) {
   panAttStr.draw(g, panBounds);
 }
 
+void OmniChannelComponent::mouseUp(const juce::MouseEvent& e) {
+  if (e.mouseWasClicked() && leftBtnDown) {
+    state->selectChannel(channelIdx);
+    auto* parent = findParentComponentOfClass<ViewedChannelsComponent>();
+    jassert(parent != nullptr);
+    parent->repaint();
+    leftBtnDown = false;
+  }
+}
+
+void OmniChannelComponent::mouseDown(const juce::MouseEvent& e) {
+  if (e.mods.isLeftButtonDown()) {
+    leftBtnDown = true;
+  }
+}
+
 bool OmniChannelComponent::isInterestedInDragSource(
     const juce::DragAndDropTarget::SourceDetails& dragSourceDetails) {
   const String fileName = dragSourceDetails.description;
