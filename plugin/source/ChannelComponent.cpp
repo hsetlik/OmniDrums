@@ -5,6 +5,7 @@
 #include "OmniDrums/GUI/Shared/Images.h"
 #include "OmniDrums/GUI/Shared/Util.h"
 #include "OmniDrums/Identifiers.h"
+#include "juce_events/juce_events.h"
 
 DrumPadComponent::DrumPadComponent(OmniState* s, int idx)
     : state(s), channelIdx(idx), iconToDraw(juce::Image()) {
@@ -141,13 +142,54 @@ void SampleNameComponent::paint(juce::Graphics& g) {
 }
 
 //============================================================
+static juce::StringArray getMIDINameList() {
+  juce::StringArray arr = {};
+  for (int i = 0; i < NUM_DRUM_CHANNELS; ++i) {
+    const int midiNote = MIN_MIDI_NUM + i;
+    auto str = getMIDINoteName(midiNote) + "- " + getMIDIDrumName(midiNote);
+    arr.add(str);
+  }
+  return arr;
+}
+
+MIDINoteSelector::MIDINoteSelector(OmniState* s, int idx)
+    : state(s), channelIdx(idx) {
+  cb.addItemList(getMIDINameList(), 1);
+  cb.setSelectedItemIndex(channelIdx);
+  addAndMakeVisible(&cb);
+  cb.addListener(this);
+  auto paramName = ID::channelMidiNum.toString() + String(channelIdx);
+  auto* param = state->audioState.getParameter(paramName);
+  auto callback = [this](float value) {
+    auto index = (int)value - MIN_MIDI_NUM;
+    cb.setSelectedItemIndex(index, juce::dontSendNotification);
+  };
+  attach.reset(new juce::ParameterAttachment(*param, callback, nullptr));
+  attach->sendInitialUpdate();
+}
+
+MIDINoteSelector::~MIDINoteSelector() {
+  cb.removeListener(this);
+}
+
+void MIDINoteSelector::comboBoxChanged(juce::ComboBox* box) {
+  int note = MIN_MIDI_NUM + box->getSelectedItemIndex();
+  attach->setValueAsCompleteGesture((float)note);
+}
+
+void MIDINoteSelector::resized() {
+  cb.setBounds(getLocalBounds());
+}
+
+//============================================================
 
 OmniChannelComponent::OmniChannelComponent(OmniState* s, int chanIdx)
     : state(s),
       channelIdx(chanIdx),
       drumPad(s, chanIdx),
       nameComp(s, chanIdx),
-      vuMeter(s, chanIdx) {
+      vuMeter(s, chanIdx),
+      noteSelector(s, chanIdx) {
   // set up sliders
   gainSlider.setSliderStyle(juce::Slider::Rotary);
   gainSlider.setTextBoxStyle(juce::Slider::NoTextBox, true, 0, 0);
@@ -165,6 +207,7 @@ OmniChannelComponent::OmniChannelComponent(OmniState* s, int chanIdx)
   addAndMakeVisible(drumPad);
   addAndMakeVisible(nameComp);
   addAndMakeVisible(vuMeter);
+  addAndMakeVisible(noteSelector);
 }
 
 void OmniChannelComponent::resized() {
@@ -177,6 +220,7 @@ void OmniChannelComponent::resized() {
   frect_t gainBounds = {191.0f, 68.0f, 35.0f, 35.0f};
   frect_t panBounds = {190.0f, 157.0f, 35.0f, 35.0f};
   frect_t meterBounds = {248.0f, 21.0f, 35.0f, 185.0f};
+  frect_t noteSelectBounds = {180.0f, 8.0f, 60.0f, 18.0f};
 
   nameComp.setBounds(
       GraphicsUtil::scaledFor(nameBounds, xScale, yScale).toNearestInt());
@@ -188,6 +232,8 @@ void OmniChannelComponent::resized() {
       GraphicsUtil::scaledFor(panBounds, xScale, yScale).toNearestInt());
   vuMeter.setBounds(
       GraphicsUtil::scaledFor(meterBounds, xScale, yScale).toNearestInt());
+  noteSelector.setBounds(
+      GraphicsUtil::scaledFor(noteSelectBounds, xScale, yScale).toNearestInt());
 }
 
 static AttString getParamAttString(const String& text, float yScale) {
@@ -207,7 +253,7 @@ void OmniChannelComponent::paint(juce::Graphics& g) {
   if (state->channelIsSelected(channelIdx)) {
     g.setColour(UIColor::offWhite);
     g.fillRect(fBounds);
-    fBounds = fBounds.reduced(0.8f);
+    fBounds = fBounds.reduced(1.0f * xScale);
   }
   g.setColour(UIColor::shadowGray);
   g.fillRect(fBounds);

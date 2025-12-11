@@ -25,8 +25,9 @@ void ViewedChannelsComponent::resized() {
     int row = c % colHeight;
     frect_t chanBounds = {(float)numCols * chanWidth, (float)row * chanHeight,
                           chanWidth, chanHeight};
-    channels[c]->setBounds(
-        GraphicsUtil::scaledFor(chanBounds, xScale, yScale).toNearestInt());
+    channels[c]->setBounds(GraphicsUtil::scaledFor(chanBounds, xScale, yScale)
+                               .toNearestInt()
+                               .reduced(1));
     if (row == colHeight - 1) {
       ++numCols;
     }

@@ -42,6 +42,21 @@ public:
 };
 
 //============================================================
+class MIDINoteSelector : public Component, public juce::ComboBox::Listener {
+private:
+  OmniState* const state;
+  const int channelIdx;
+  param_attach_ptr attach;
+  juce::ComboBox cb;
+
+public:
+  MIDINoteSelector(OmniState* s, int idx);
+  ~MIDINoteSelector() override;
+  void resized() override;
+  void comboBoxChanged(juce::ComboBox* box) override;
+};
+
+//============================================================
 class OmniChannelComponent : public Component, public juce::DragAndDropTarget {
 private:
   OmniState* const state;
@@ -53,6 +68,7 @@ private:
   DrumPadComponent drumPad;
   SampleNameComponent nameComp;
   ChannelVUMeter vuMeter;
+  MIDINoteSelector noteSelector;
   bool leftBtnDown = false;
 
 public:

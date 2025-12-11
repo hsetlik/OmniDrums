@@ -88,3 +88,11 @@ String getMIDINoteName(int note) {
   jassert(note < 128);
   return noteNames[(size_t)note];
 }
+
+String getMIDIDrumName(int midiNote) {
+  static std::unordered_map<int, String> map = generalMIDIDrumNames();
+  if (map.contains(midiNote)) {
+    return map[midiNote];
+  }
+  return "Null";
+}

@@ -18,6 +18,7 @@ typedef std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>
     slider_attach_ptr;
 typedef std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment>
     combo_attach_ptr;
+typedef std::unique_ptr<juce::ParameterAttachment> param_attach_ptr;
 typedef juce::NormalisableRange<float> frange_t;
 using ValueTree = juce::ValueTree;
 using String = juce::String;
@@ -71,6 +72,7 @@ inline String stringFor(const DrumCategE& categ) {
 // https://qsrdrums.com/webhelp-responsive/References/r_general_midi_drum_kit.html
 const std::unordered_map<int, String>& generalMIDIDrumNames();
 String getMIDINoteName(int note);
+String getMIDIDrumName(int midiNote);
 
 //--------------------------------------------------------------
 
